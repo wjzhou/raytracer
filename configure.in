@@ -1,0 +1,37 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.68])
+AC_INIT([Raytracer], [0.2], [wujun_zhou@csu.fullerton.edu])
+AC_CONFIG_SRCDIR([src/Makefile.am])
+AC_CONFIG_HEADERS([src/config.hpp])
+#AC_CONFIG_MACRO_DIR([m4])
+#AC_CONFIG_MACRO_DIR(m4)
+AC_CONFIG_AUX_DIR([build-aux])
+
+AM_INIT_AUTOMAKE
+AC_PROG_LIBTOOL
+
+# Checks for programs.
+AC_PROG_CXX
+#AC_CXX_COMPILE_STDCXX_0X 
+AC_PROG_YACC
+AC_PROG_LEX
+
+# Checks for libraries.
+
+# Checks for header files.
+AC_CHECK_HEADERS([fcntl.h inttypes.h libintl.h malloc.h stdint.h stdlib.h string.h unistd.h])
+
+
+# Checks for library functions.
+AC_CHECK_FUNCS([floor sqrtf])
+
+BOOST_REQUIRE
+BOOST_PROGRAM_OPTIONS
+AM_PATH_GRAPHICS_MAGICK
+
+AC_CONFIG_FILES([Makefile
+                 src/Makefile
+                 src/gramma/Makefile])
+AC_OUTPUT

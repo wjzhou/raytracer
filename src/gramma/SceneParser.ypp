@@ -1,0 +1,199 @@
+%skeleton "lalr1.cc"                          /*  -*- C++ -*- */
+%require "2.5"
+%defines
+%define parser_class_name "SceneParser"
+
+%code requires {
+# include <string>
+# include "../Scene.hpp"
+class ParseDriver;
+ 
+}
+
+// The parsing context.
+%parse-param { ParseDriver& driver }
+%lex-param   { ParseDriver& driver }
+
+%locations
+%initial-action
+{
+  // Initialize the initial location.
+  @$.begin.filename = @$.end.filename = &driver.file;
+};
+
+%debug
+%error-verbose
+
+// Symbols.
+%union
+{
+  int                     ival;
+  float                   fval;
+  std::string             *sval;
+  Vec3f                   *vec3f;
+  Camera                  *cval;
+  Light                   *yLight;//bison does not allow same name
+  Object3D                *yObject3D;
+  Material                *yMaterial;
+  Transformation          *yTransformation;
+};
+
+%code {
+# include "ParseDriver.hpp"
+}
+
+%token        END      0 "end of file"
+%token <ival> Integer
+%token <fval> FLOAT
+%token <sval> string
+
+
+%token  OrthographicCamera center direction up PerspectiveCamera angle SimplePerspectiveCamera distance ViewPlane width height pixelsize DirectionalLight position color attenuation PointLight Background
+
+ /*material*/
+%token  Materials  numMaterials PhongMaterial diffuseColor specularColor exponent transparentColor reflextiveColor indexOfRefraction 
+
+ /*transform*/
+
+%token  Group numObjects Transform Translate Scale XRotate YRotate ZRotate Rotate Matrix Sphere radius Plane normal offset Triangle vertex0 vertex1 vertex2 TriangleMesh ply_file MaterialIndex
+
+%type <cval> camera orthographicCamera perspectiveCamera simplePerspectiveCamera
+
+%type <yLight>  light pointLight directionalLight
+%type <yObject3D>    object3D group transform sphere plane triangle triangleMesh
+%type <yMaterial>    material phongMaterial
+%type <vec3f>  vec3f viewPlane
+%type <ival>   materialIndex
+%type <yTransformation>   transformation
+%type <fval>   Float
+
+%printer    { debug_stream () << *$$; } <sval> <vval>
+%destructor { delete $$; } <sval> <vval>
+
+%printer    { debug_stream () << $$; } <ival> <fval>
+
+%%
+%start file;
+file: camera lights background materials group{};
+
+camera: orthographicCamera {driver.scene.setCamera($1);}
+      | perspectiveCamera{driver.scene.setCamera($1);} 
+      | simplePerspectiveCamera{driver.scene.setCamera($1);}
+
+orthographicCamera: OrthographicCamera '{' 
+center vec3f direction vec3f up vec3f viewPlane
+'}'
+{
+  $$=new OrthographicCamera(*$4,*$6,*$8,$9->x,$9->y,$9->z);
+  delete ($4); delete ($6); delete ($8); delete($9);
+};
+
+perspectiveCamera: PerspectiveCamera '{'
+center vec3f direction vec3f up vec3f angle Float '}'
+{
+  $$=new PerspectiveCamera(*$4,*$6,*$8,$10);
+  delete ($4); delete ($6); delete ($8);
+};
+
+simplePerspectiveCamera: SimplePerspectiveCamera '{'
+center vec3f direction vec3f up vec3f distance Float
+'}' {cout<<"simplePerspectivecamera not implemented";};
+
+viewPlane: ViewPlane '{' width Float height Float pixelsize Float '}'
+{ 
+  $$=new Vec3f($4,$6,$8); }
+| width Float height Float {$$=new Vec3f($2,$4,UNDEFINEDF); };
+
+//| /*empty*/
+// {$$=new Vec3f(UNDEFINEDF,UNDEFINEDF,UNDEFINEDF);}
+
+lights: light{};
+light: directionalLight {$$=$1;}
+     | pointLight  {$$=$1;}
+     | /*empty*/{};
+
+optionAngle: angle Float
+           | /*empty*/;
+
+attenuations: attenuations attenuation vec3f
+            | /*empty*/;
+
+directionalLight: DirectionalLight '{'
+position vec3f direction vec3f color vec3f
+optionAngle attenuations'}'
+{cout<<"directionLight not implemented";};
+
+pointLight: PointLight '{'
+position vec3f color vec3f attenuations
+'}' {cout<<"PointLight not implemented";};
+
+background: Background '{'
+color vec3f
+'}' {driver.scene.setBackground(*$4);};
+
+materials: Materials '{'
+numMaterials Integer{driver.scene.newMaterials($4);}
+materialList
+'}' {};
+
+materialList: materialList material{driver.scene.addMaterial($2);}
+            | /*empty*/{};
+
+/*need work*/
+material: phongMaterial{$$=$1;};
+
+phongMaterial: PhongMaterial '{' diffuseColor vec3f
+'}'{$$=new PhongMaterial(*$4);delete $4;};
+
+group: Group '{'
+numObjects Integer {driver.scene.newGroup($4);}
+object3DList
+'}' {driver.scene.endGroup($4);};
+
+object3DList: object3DList object3D {driver.scene.addObject3D($2);}
+            | object3DList materialIndex object3D {driver.scene.addObject3D($3);}
+            | /*empty*/{};
+
+object3D: group {$$=$1;}
+        |transform {$$=$1;}
+        |sphere {$$=$1;}
+        |plane {$$=$1;}
+        |triangle {$$=$1;}
+        |triangleMesh {$$=$1;};
+transform: Transform '{'
+transformationList object3D'}'{};
+           //{$4->transformation($3);$$=$4;};
+
+transformationList:  transformationList transformation{}
+                  | transformation{};
+transformation: Translate vec3f{}
+              | Scale vec3f{}
+              | XRotate vec3f{}
+              | YRotate vec3f{}
+              | ZRotate vec3f{}
+              | Rotate vec3f Float{}
+              | Matrix Matrix16f{};
+
+sphere: Sphere '{' center vec3f radius Float '}'
+{$$=new Sphere(*$4,$6);$$->setMaterialIndex(driver.currentMaterialIndex); delete $4;};
+plane: Plane '{' normal vec3f offset Float '}'{};
+triangle: Triangle '{' vertex0 vec3f vertex1 vec3f vertex2 vec3f '}'{};
+triangleMesh: TriangleMesh '{' ply_file string '}'{cout<<"TriangleMesh not implemented,file:"<<$4<<endl;};
+
+materialIndex: MaterialIndex Integer{driver.currentMaterialIndex=$2;};
+
+//vec3f: Float Float Float{$$=std::unique_ptr<Vec3f>(new Vec3f($1,$2,$3));};
+vec3f: Float Float Float{$$=new Vec3f($1,$2,$3);};
+Matrix16f: 
+Float Float Float Float Float Float Float Float
+Float Float Float Float Float Float Float Float{};
+Float: FLOAT {$$=$1;}
+     | Integer {$$=(float)$1;};
+
+%%
+void
+yy::SceneParser::error (const yy::SceneParser::location_type& l,
+                          const std::string& m)
+{
+  driver.error (l, m);
+}

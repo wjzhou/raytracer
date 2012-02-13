@@ -1,0 +1,176 @@
+%{                                            /* -*- C++ -*- */
+# include <cstdlib>
+# include <cerrno>
+# include <climits>
+# include <string>
+# include "ParseDriver.hpp"
+# include "SceneParser.hpp"
+
+/* Work around an incompatibility in flex (at least versions
+   2.5.31 through 2.5.33): it generates code that does
+   not conform to C89.  See Debian bug 333231
+   <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=333231>.  */
+# undef yywrap
+# define yywrap() 1
+
+/* By default yylex returns int, we use token_type.
+   Unfortunately yyterminate by default returns 0, which is
+   not of token_type.  */
+#define yyterminate() return token::END
+
+#define STR2INT(base)                                     \
+do{                                                       \
+  errno = 0;                                              \
+  long n = strtol (yytext, NULL, base);                   \
+  if (! (INT_MIN <= n && n <= INT_MAX && errno != ERANGE))\
+    driver.error (*yylloc, "integer is out of range");    \
+  yylval->ival = n;                                       \
+  return token::Integer;                                  \
+}while(0)
+%}
+
+%option noyywrap nounput batch debug
+%x IN_COMMENT
+
+%{/* the float is copy from flex manual,C99 float and int does not contains 0, add octal to support 0 int. */
+%}
+int [-]?[1-9]+[0-9]*
+hint 0[xX][[:xdigit:]]+ 
+oint 0[0123456]*
+
+dseq      ([[:digit:]]+)
+dseq_opt  ([[:digit:]]*)
+frac      (({dseq_opt}"."{dseq})|{dseq}".")
+exp       ([eE][+-]?{dseq})
+exp_opt   ({exp}?)
+fsuff     [flFL]
+fsuff_opt ({fsuff}?)
+hpref     (0[xX])
+hdseq     ([[:xdigit:]]+)
+hdseq_opt ([[:xdigit:]]*)
+hfrac     (({hdseq_opt}"."{hdseq})|({hdseq}"."))
+bexp      ([pP][+-]?{dseq})
+dfc       (({frac}{exp_opt}{fsuff_opt})|({dseq}{exp}{fsuff_opt}))
+hfc       (({hpref}{hfrac}{bexp}{fsuff_opt})|({hpref}{hdseq}{bexp}{fsuff_opt}))
+
+c99_floating_point_constant  ({dfc}|{hfc})
+floating  ([-]?{c99_floating_point_constant})
+
+blank [ \t]
+
+%{
+# define YY_USER_ACTION  yylloc->columns (yyleng);
+%}
+%%
+%{
+  yylloc->step ();
+%}
+{blank}+   yylloc->step ();
+[\n]+      yylloc->lines (yyleng); yylloc->step ();
+
+%{
+  typedef yy::SceneParser::token token;
+%}
+           
+%{/*skip c type comments*/%}
+
+<INITIAL>{
+  "/*"              BEGIN(IN_COMMENT);
+}
+<IN_COMMENT>{
+  "*/"      BEGIN(INITIAL);
+  [^*\n]+   // eat comment in chunks
+    "*"       // eat the lone star
+    \n        yylineno++;
+}
+
+
+[{}]     return yy::SceneParser::token_type (yytext[0]);
+%{/* Convert ints to the actual type of tokens.  */%}
+{int}      {STR2INT(10);}
+{oint}     {STR2INT(8);}
+{hint}     {STR2INT(16);}
+
+
+{floating} {
+  errno = 0;
+  float f = strtof (yytext, NULL);
+  if (errno != 0)
+    driver.error (*yylloc, "string to float error");    
+  yylval->fval = f;
+  /*Float is used in gramma to promote int to float, so using FLOAT here*/
+  return token::FLOAT;
+}
+
+OrthographicCamera  return token::OrthographicCamera;
+PerspectiveCamera  return token::PerspectiveCamera;
+SimplePerspectiveCamera  return token::SimplePerspectiveCamera;
+center    return token::center;
+direction return token::direction;
+up        return token::up;
+angle     return token::angle;
+distance  return token::distance;
+width     return token::width;
+height    return token::height;
+pixelsize return token::pixelsize;
+position   return token::position;
+color     return token::color;
+attenuation return token::attenuation;
+
+Background return token::Background;
+Materials return token::Materials;
+
+numMaterials return token::numMaterials;
+
+PhongMaterial return token::PhongMaterial;
+diffuseColor return token::diffuseColor;
+specularColor return token::specularColor;
+exponent return token::exponent;
+transparentColor return token::transparentColor;
+reflextiveColor return token::reflextiveColor;
+indexOfRefraction return token::indexOfRefraction;
+
+Group return token::Group;
+numObjects return token::numObjects;
+Transform return token::Transform;
+Translate return token::Translate;
+Scale return token::Scale;
+XRotate return token::XRotate;
+YRotate return token::YRotate;
+ZRotate return token::ZRotate;
+Rotate return token::Rotate;
+Matrix return token::Matrix;
+Sphere return token::Sphere;
+radius return token::radius;
+Plane return token::Plane;
+normal return token::normal;
+offset return token::offset;
+Triangle return token::Triangle;
+vertex0 return token::vertex0;
+vertex1 return token::vertex1;
+vertex2 return token::vertex2;
+
+TriangleMesh return token::TriangleMesh;
+ply_file return token::ply_file;
+
+MaterialIndex return token::MaterialIndex;
+%%
+
+void
+ParseDriver::scan_begin ()
+{
+  yy_flex_debug = garg_debug_trace_lexing;
+  if (file == "-")
+    yyin = stdin;
+  else if (!(yyin = fopen (file.c_str (), "r")))
+    {
+      error (std::string ("cannot open ") + file);
+      exit (1);
+    }
+}
+
+void
+ParseDriver::scan_end ()
+{
+  fclose (yyin);
+}
