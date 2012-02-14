@@ -37,6 +37,13 @@ do                                \
   garg_debug_flage|=(1<<select);  \
 while (false);
 
+static void usage(char* pname)
+{
+  cout<<"This is a simple raytracer for cs566."<<endl;
+  cout<<"Usage:"<<pname<<" -i input -o output.tiff -d depth.tiff\n"<<endl;
+}
+
+
 int
 Options::parse(int argc, char* argv[])
 {
@@ -72,8 +79,8 @@ Options::parse(int argc, char* argv[])
   po::options_description misc("Miscellaneous options");
   misc.add_options()
     ("maxdepth,m", po::value<float>(&garg_max_depth)->default_value(20.0f), "set the max depth(used for computing gray level in depth file).")
-    ("graphicmagick", po::bool_switch(&garg_disable_gm), "whether avoid using graphicsmagick when it is available.")
-    ("contrast_enhance", po::bool_switch(&garg_contrast_enhance), "whether using contrast stretch to improve dynamic of depth image when possible.")
+    ("disable-gm", po::bool_switch(&garg_disable_gm), "whether avoid using graphicsmagick when it is available.")
+    ("contrastEnhance", po::bool_switch(&garg_contrast_enhance), "whether using contrast stretch to improve dynamic of depth image when possible.")
     ("debugParser,P", po::bool_switch(&garg_debug_trace_parsing),"turn on parser debug")
     ("debugLexer,L",po::bool_switch(&garg_debug_trace_lexing),"turn on lexer debug")
     ;
@@ -93,20 +100,18 @@ Options::parse(int argc, char* argv[])
     po::notify(vm);
   }
   if (vm.count("version")) {
-    cout << "raytracer, version 1.0\n";
+    cout << "raytracer, version 0.2\n";
     exit(0);
   }
 
   if (vm.count("help")){
-    cout<<"This is a simple raytracer for cs566.\n";
-    cout<<"Usage:"<<argv[0]<<" -i input -o output -d depth 1000\n";
+    usage(argv[0]);
     cout<<all<<endl;
     exit(0);
   }
   
   if (!vm.count("input")){
-    cout<<"This is a simple raytracer for cs566.\n";
-    cout<<"Usage:"<<argv[0]<<" -i input -o output -d depth 1000\n";
+    usage(argv[0]);
     cout<<show<<endl;
     exit(1);
   }

@@ -56,7 +56,8 @@ void
 ImageBuffer::setDepth(int x,int y,float depth)
 {
   float normal=depth/garg_max_depth;
-  zbuffer[x+y*width]=(normal>1.0f)?1.0f:normal;
+  float invese=1.0-normal;
+  zbuffer[x+y*width]=(normal<0.0f)?0.0f:normal;
 }
 
 void

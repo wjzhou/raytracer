@@ -8,7 +8,7 @@
 EXTRA_DIST =					\
   $(srcdir)/bison.stamp  			\
   $(srcdir)/SceneParser.ypp			\
-  $(srcdir)/SceneParser.lpp
+  $(srcdir)/SceneScanner.lpp
 
 
 
@@ -29,8 +29,7 @@ $(bison_sources_generated): $(srcdir)/bison.stamp
 	fi
 
 noinst_LTLIBRARIES = libgramma.la
-#libgramma_la_SOURCES = ParseDriver.cpp SceneParser.ypp SceneScanner.lpp
-pkginclude_HEADERS = ParseDriver.hpp
+noinst_HEADERS = ParseDriver.hpp
 
 gramma_sources = $(srcdir)/ParseDriver.cpp
 bison_sources_generated = \

@@ -5,9 +5,13 @@
  *
  * $Id: Ray.hpp Wed Feb  1 15:05:17 2012 wujun $
  * 
+ * For efficient, this class is intended to be POD type. 
+ * I also let ray object to recode the raytracer status in it.
+ * Reduce the parameter needed for hit and shader functions.
+ * Because these functions are called most frequently .
  *
- * The ray object also recode the raytracer status in it.
- * For efficient, this class is intended to be POD type
+ * Finnally, it may be helpful to seperate ray and trace state.
+ * 
  */
 #ifndef _RAY_H_
 #define _RAY_H_
@@ -20,8 +24,8 @@ struct Ray
 public:
   Vec3f origin;
   Vec3f direction;
-  float distance;
-  Object3D* hitObject;  
+  float distance;      /* these field are most used, */
+  Object3D* hitObject; /* make then on the same 64 byte cache line*/
   Vec3f currView;
   Vec3f currViewY;
   void cleanUp(){hitObject=NULL;distance=INFINITY;}

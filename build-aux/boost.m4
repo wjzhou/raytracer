@@ -403,7 +403,15 @@ dnl generated only once above (before we start the for loops).
       LDFLAGS=$boost_save_LDFLAGS
       LIBS=$boost_save_LIBS
       if test x"$Boost_lib" = xyes; then
-        Boost_lib_LDFLAGS="-L$boost_ldpath -Wl,-R$boost_ldpath"
+        # Because Boost is often installed in non-standard locations we want to
+        # hardcode the path to the library (with rpath).  Here we assume that
+        # Libtool's macro was already invoked so we can steal its variable
+        # hardcode_libdir_flag_spec in order to get the right flags for ld.
+        boost_save_libdir=$libdir
+        libdir=$boost_ldpath
+        eval boost_rpath=\"$hardcode_libdir_flag_spec\"
+        libdir=$boost_save_libdir
+        Boost_lib_LDFLAGS="-L$boost_ldpath $boost_rpath"
         Boost_lib_LDPATH="$boost_ldpath"
         break 6
       else
@@ -478,6 +486,33 @@ BOOST_FIND_HEADER([boost/asio.hpp])])
 # Look for Boost.Bind
 BOOST_DEFUN([Bind],
 [BOOST_FIND_HEADER([boost/bind.hpp])])
+
+
+# BOOST_CHRONO()
+# ------------------
+# Look for Boost.Chrono
+BOOST_DEFUN([Chrono],
+[# Do we have to check for Boost.System?  This link-time dependency was
+# added as of 1.35.0.  If we have a version <1.35, we must not attempt to
+# find Boost.System as it didn't exist by then.
+if test $boost_major_version -ge 135; then
+BOOST_SYSTEM([$1])
+fi # end of the Boost.System check.
+boost_filesystem_save_LIBS=$LIBS
+boost_filesystem_save_LDFLAGS=$LDFLAGS
+m4_pattern_allow([^BOOST_SYSTEM_(LIBS|LDFLAGS)$])dnl
+LIBS="$LIBS $BOOST_SYSTEM_LIBS"
+LDFLAGS="$LDFLAGS $BOOST_SYSTEM_LDFLAGS"
+BOOST_FIND_LIB([chrono], [$1],
+                [boost/chrono.hpp],
+                [boost::chrono::thread_clock d;])
+if test $enable_static_boost = yes && test $boost_major_version -ge 135; then
+    AC_SUBST([BOOST_FILESYSTEM_LIBS], ["$BOOST_FILESYSTEM_LIBS $BOOST_SYSTEM_LIBS"])
+fi
+LIBS=$boost_filesystem_save_LIBS
+LDFLAGS=$boost_filesystem_save_LDFLAGS               
+                
+])# BOOST_CHRONO
 
 
 # BOOST_CONVERSION()

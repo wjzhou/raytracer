@@ -32,12 +32,14 @@ void
 ParseDriver::error (const yy::location& l, const std::string& m)
 {
   std::cerr << l << ": " << m << std::endl;
+  exit(1);
 }
 
 void
 ParseDriver::error (const std::string& m)
 {
   std::cerr << m << std::endl;
+  exit(1);
 }
 
 
