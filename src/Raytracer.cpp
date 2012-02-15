@@ -18,12 +18,22 @@ Raytracer::doRaytrace()
 {
   const Camera& camera=scene.getCamera();
   Group* topGroup=scene.getTopGroup();
-  Ray ray;
-  camera.updateRayAt(ray,0,0);
   //cout<<0<<" "<<0<<" "<<ray.origin<<" "<<ray.direction<<endl;
   int x,y;
-  for (y=0;y<image.height;y++,camera.updateRayY(ray)){
-    for (x=0;x<image.width;x++,camera.updateRayX(ray)){
+  int height=image.height;
+  int width=image.width;
+
+  #pragma omp parallel for schedule(dynamic) default(none)              \
+    private(x,y) shared(height,width,topGroup,camera)
+  /*int nthreads, tid;
+    #pragma omp parallel private(nthreads, tid)
+  tid = omp_get_thread_num();
+  nthreads = omp_get_num_threads();*/
+
+  for (y=0;y<height;y++){
+    Ray ray;
+    camera.updateRayAt(ray,0,y);
+    for (x=0;x<width;x++){
       ray.cleanUp();
       //cout<<x<<" "<<y<<" "<<ray.origin<<" "<<ray.direction<<endl;
       topGroup->intersection(ray);
@@ -38,6 +48,8 @@ Raytracer::doRaytrace()
         image.setColor(x,y,DOT(normal,-ray.direction)*(material.diffuseColor));
         //cout<<x<<" "<<y<<"hit,distance:"<<ray.distance<<" hitpoint:"<<hitPoint<<"normal:"<<normal<<endl<<endl;
       }
+      camera.updateRayX(ray);
     }
-  }  
+    //    camera.updateRayY(ray);
+  }
 }
