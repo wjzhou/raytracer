@@ -39,7 +39,8 @@ private:
   void newGroup(size_t size);
   void endGroup(size_t size);
   void addObject3D(Object3D* object3D );
-public: 
+public:
+  Scene();
   const Camera& getCamera(){return *camera;}
   boost::ptr_vector<Light>& getLights(){return lights;}
   Color& getBackground(){return background;}

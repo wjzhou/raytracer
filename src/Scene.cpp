@@ -9,6 +9,11 @@
  * 
  */
 #include "Scene.hpp"
+Scene::Scene()
+{
+  topGroup=NULL;  //otherwise the topGoup may contain random values..
+}
+
 void
 Scene::newGroup(size_t size)
 {
