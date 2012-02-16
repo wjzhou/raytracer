@@ -1,0 +1,29 @@
+This is the simple raytracer for cpsc-566
+Usage:
+unzip and cd to the directory,then:  
+$./configure
+$make
+$./src/raytracer -i /path/to/scenefile
+
+The output and depth will be in the current directory
+the default output file will be "output.ppm"
+and default depth  file will be "depth.pgm"
+
+This program has been test under Gentoo linux 2012 with gcc 4.5.3 and Mac os x
+10.7 with g++ and clang++(actually not fully tested under this condition)
+
+Reference
+The initial math.hpp is from Jacco Bikker www.bik5.com.
+And the ray sphere intersect code is adapt from his code.
+
+FAQ:
+1. The output file may not have desired format.
+If the Graphicmagick does not support the format, it will output a miff(
+Magick image file format) file.
+
+2. If there still some thing wrong with the program, try using minimal set.
+At configure time, try using --disable-gm and --disable-openmp.
+$configure --disable-gm --disable-openmp
+
+
+
