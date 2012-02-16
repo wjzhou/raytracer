@@ -9,22 +9,24 @@ AC_DEFUN([AM_PATH_GRAPHICS_MAGICK],
 dnl Get the cflags and libraries from GraphicsMagick++-config
 dnl
 AC_ARG_ENABLE(gm, 
-[  --disable-gm      do not try to link with graphicmgic, then the output fall back to ppm],
-[AC_MSG_RESULT([get --disable-gm, skip graphicsmagic probing])],
+[  --disable-gm          do not try to link with graphicmgic, then the output fall back to ppm],
+[AC_MSG_NOTICE([get --disable-gm, skip graphicsmagic probing])],
 [
-
   AC_PATH_PROG([GM_CONFIG], [GraphicsMagick++-config], [no])
+  AC_MSG_CHECKING([whether the graphicsmagick lib have been installed])
 
   if test x"$GM_CONFIG" = xno ; then
     AC_MSG_RESULT([GraphicsMagick++ not found, fall back to ppm. If it has been installed, try to set GM_CONFIG=/path/to/GraphicsMagick++-config, and try again.])
   else
-    AC_MSG_RESULT([GraphicMagic version $gm_version found])
+    AC_MSG_RESULT([yes])
     AC_DEFINE([HAVE_GM],1,[This indicate to use Gragicsmagick])
     GM_CPPFLAGS=`$GM_CONFIG --cppflags`
     GM_CXXFLAGS=`$GM_CONFIG --cxxflags`
     GM_LDFLAGS=`$GM_CONFIG --ldflags`
     GM_LIBS=`$GM_CONFIG --libs`
     gm_version=`$GM_CONFIG --version`
+    AC_MSG_CHECKING([for GraphicsMagick++ version])
+    AC_MSG_RESULT([$gm_version])
   fi
   AC_SUBST(GM_CPPFLAGS)
   AC_SUBST(GM_CXXFLAGS)
