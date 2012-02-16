@@ -139,6 +139,7 @@ Vec3f
 Group::getNormal(Vec3f& hitPoint)
 {
   //ASSERT_MSG(true,"getNormal of Group invoked, something must wrong.");
+  exit(3);
 }
 
 void

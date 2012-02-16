@@ -35,7 +35,7 @@ PPMOutputAdaptor::output(std::string& filename,void* buffer,
     fs<<'\n';
   }
   fs.close();
-  
+  return 0;  
 }
 
 
