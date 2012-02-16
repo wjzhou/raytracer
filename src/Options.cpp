@@ -47,7 +47,7 @@ static void usage(char* pname)
 int
 Options::parse(int argc, char* argv[])
 {
-
+try{ 
   po::options_description generic("Generic options");
   generic.add_options()
     ("help,h", "produce help message")
@@ -126,7 +126,12 @@ Options::parse(int argc, char* argv[])
     //DSET(DEBUG_PARSER);
   //}
   cout<<"Option parse has been completed."<<endl;
-  return 0;  
+  return 0;
+}
+catch(exception& e) {
+  cout << e.what() << "\n";
+  exit(1);
+}
 }
 
 std::string& Options::getInputFileName()
