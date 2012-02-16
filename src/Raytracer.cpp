@@ -22,9 +22,13 @@ Raytracer::doRaytrace()
   int x,y;
   int height=image.height;
   int width=image.width;
-
-  #pragma omp parallel for schedule(dynamic) default(none)              \
-    private(x,y) shared(height,width,topGroup,camera)
+  
+  /*using default shared, because on mac os x the const Camera will be 
+   * predetermined as shard and have error 
+   * 'camera' is predetermined 'shared' for 'shared'
+   * while on linux it must been marked as shared*/ 
+  #pragma omp parallel for schedule(dynamic) default(shared)              \
+    private(x,y) shared(height,width,topGroup)
   /*int nthreads, tid;
     #pragma omp parallel private(nthreads, tid)
   tid = omp_get_thread_num();
