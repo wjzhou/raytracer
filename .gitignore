@@ -38,5 +38,13 @@ src/gramma/location.hh
 src/gramma/position.hh
 src/gramma/stack.hh
 build/
-
+ChangeLog
+*.pgm
+*.ppm
+*.tiff
+*.png
+src/config.hpp
+src/gramma/.libs/
+*.lo
+*.la
 
