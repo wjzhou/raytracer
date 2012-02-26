@@ -176,8 +176,8 @@ transformation: Translate vec3f{}
 
 sphere: Sphere '{' center vec3f radius Float '}'
 {$$=new Sphere(*$4,$6);$$->setMaterialIndex(driver.currentMaterialIndex); delete $4;};
-plane: Plane '{' normal vec3f offset Float '}'{};
-triangle: Triangle '{' vertex0 vec3f vertex1 vec3f vertex2 vec3f '}'{};
+plane: Plane '{' normal vec3f offset Float '}'{$$=new Plane(*$4,$6);$$->setMaterialIndex(driver.currentMaterialIndex); delete $4;};
+triangle: Triangle '{' vertex0 vec3f vertex1 vec3f vertex2 vec3f '}'{$$=new Triangle(*$4,*$6,*$8);$$->setMaterialIndex(driver.currentMaterialIndex); delete $4;delete $6;delete $8;};
 triangleMesh: TriangleMesh '{' ply_file string '}'{cout<<"TriangleMesh not implemented,file:"<<$4<<endl;};
 
 materialIndex: MaterialIndex Integer{driver.currentMaterialIndex=$2;};

@@ -22,8 +22,8 @@ public:
   virtual ~Object3D(){};
   virtual Object3D::Result intersection(Ray& ray)=0;
   virtual Vec3f getNormal(Vec3f& hitPoint)=0;
-  int getMaterialIndex(){return materialIndex;}
-  void setMaterialIndex(int index){materialIndex=index;}
+  virtual int getMaterialIndex(){return materialIndex;}
+  virtual void setMaterialIndex(int index){materialIndex=index;}
 private:
   int materialIndex;
 #ifdef DEBUG
@@ -46,6 +46,31 @@ private:
   
 };
 
+class Plane : public Object3D
+{
+public:
+  Plane(Vec3f normal, float offset);
+  virtual Object3D::Result intersection(Ray& ray);
+  virtual Vec3f getNormal(Vec3f& hitPoint);
+private:
+  Vec3f normal;
+  float moffset;  //-offset
+};
+
+class Triangle : public Object3D
+{
+public:
+  Triangle(Vec3f a, Vec3f b, Vec3f c);
+  virtual Object3D::Result intersection(Ray& ray);
+  virtual Vec3f getNormal(Vec3f& hitPoint);
+private:
+  Vec3f a;
+  Vec3f b;
+  Vec3f c;
+  Vec3f normal;
+  float A1[4];
+};
+
 class Group : public Object3D
 {
 public:
@@ -59,7 +84,6 @@ private:
   int size;
   boost::ptr_vector<Object3D> data;
 };
-
 
 #endif /* _OBJECT3D_H_ */
 

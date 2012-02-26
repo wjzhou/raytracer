@@ -24,6 +24,7 @@ using namespace std;
 inline float Rand( float a_Range ) { return ((float)rand() / RAND_MAX) * a_Range; }
 
 #define DOT(A,B)		(A.x*B.x+A.y*B.y+A.z*B.z)
+#define CEOSS(A, B)  Vec3( A.y * B.z - A.z * B.y, A.z * B.x - A.x * B.z, A.x * B.y - A.y * B.x ) 
 #define LENGTH(A)		(sqrtf(A.x*A.x+A.y*A.y+A.z*A.z))
 #define NORMALIZE(A)	{float l=1/LENGTH(A);A.x*=l;A.y*=l;A.z*=l;}
 #define SQRLENGTH(A)	(A.x*A.x+A.y*A.y+A.z*A.z)

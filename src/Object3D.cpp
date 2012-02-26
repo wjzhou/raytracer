@@ -80,48 +80,76 @@ Sphere::getNormal(Vec3f& hitPoint)
   return (hitPoint-center)*rradius;
 }
 
+Plane::Plane(Vec3f normal, float offset)
+ :normal(normal),moffset(offset)
+{
+}
 
-// /**
-//  * calculate the intersection point, and update distance member of ray object.
-//  *
-//  * for a ray, x=o+td and a plane with normal n, point a on the plane,
-//  * we get n.(p-a)=0. Then, n.(o+td-a)=0.
-//  * expand, get n.dt=n.(a-o)
-//  * thus t=n.(a-o)/(n.d)
-//  *
-//  * @param ray the input ray
-//  * 
-//  * @return if hit return Object3D::Hit
-//  */
-// Object3D::Result
-// Sphere::intersect(Ray& ray,TraceState& state) const
-// {
-//   Vec3f nd=DOT(normal,ray.direction);
-//   if(nd<0.001)
-//      return Object3D::Result::MISS;
-  
-//   float det=(b*b)-DOT(v,v)+radius2;
-//   if (det<0)
-//     return Object3D::Result::MISS;
-//   //  det=std::sqrtf(det);
-//   det=sqrtf(det); //sqrtf is not in std:: space,why?
-//    float hit1=b-det;
-//   float hit2=b+det;
-//   if(hit2>0){
-//     if(hit1<=0 && hit2< state.distance){
-//       state.distance=hit2;
-//       return Object3D::Result::INSIDE;
-//     }
-//     if(hit1>0 && hit1< state.distance){
-//       state.distance=hit1;
-//       state.hitObject=static_cast<const Object3D *>(this);
-//       return Object3D::Result::HIT;
-//     }
-//   }
-//   return Object3D::Result::MISS;   
-// }
+/* n.(o+td)=-f
+ * t=-f-n.o/n.d  
+ */
+Object3D::Result
+Plane::intersection(Ray& ray)
+{
+  float t=(moffset-normal.dot(ray.origin))/(normal.dot(ray.direction)); //divid 0 is ok
+  if(t>0 && t< ray.distance){                               //for ieee745
+    ray.distance=t;
+    ray.hitObject=static_cast<Object3D *>(this);
+    return Object3D::RESULT_HIT;
+  }
+  return Object3D::RESULT_MISS;
+}
 
+Vec3f
+Plane::getNormal(Vec3f& hitPoint)
+{
+  return normal;
+}
 
+Triangle::Triangle(Vec3f a, Vec3f b, Vec3f c)
+  :a(a),b(b),c(c)
+{
+  normal=(b-a).cross(c-a);
+  float A1_D=(a.x-b.x)*(a.y-c.y)-(a.x-c.x)*(a.y-b.y);
+  A1[0]=(a.y-c.y)/A1_D;
+  A1[1]=(b.y-a.y)/A1_D;
+  A1[2]=(c.x-a.x)/A1_D;
+  A1[3]=(a.x-b.x)/A1_D;
+}
+
+/* n.(o+td-a)=0
+ * t=n.(a-o)/n.d  
+ */
+Object3D::Result
+Triangle::intersection(Ray& ray)
+{
+  float t=(normal.dot(a-ray.origin))/(normal.dot(ray.direction));
+  //  cout<<"t"<<t<<endl;
+  if(t>0 && t<ray.distance){
+    Vec3f hitPoint=ray.origin+ray.distance*ray.direction;
+    float y[2];
+    y[0]=a.x-hitPoint.x;
+    y[1]=a.y-hitPoint.y;
+    
+    float beta=A1[0]*y[0]+A1[1]*y[1];
+    if (beta<0 || beta>1)
+      return Object3D::RESULT_MISS;
+    float garma=A1[2]*y[0]+A1[3]*y[1];
+    if (garma<0 || beta+garma>1)
+      return Object3D::RESULT_MISS;
+    
+    ray.distance=t;
+    ray.hitObject=static_cast<Object3D *>(this);
+    return Object3D::RESULT_HIT;
+  }
+  return Object3D::RESULT_MISS;
+}
+
+Vec3f
+Triangle::getNormal(Vec3f& hitPoint)
+{
+  return normal;
+}
 
 inline Object3D::Result
 Group::intersection(Ray& ray)
