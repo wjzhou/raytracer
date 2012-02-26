@@ -44,12 +44,10 @@ ImageBuffer::setColor(int x,int y,Color color)
   if(cb>255)
     cb=255;
   buffer[x+y*width]=(cr<<16)|(cg<<8)|cb;
-  
-#ifdef DEBUG
-  //  if(cr+cg+cb>400||cr<0||cg<0||cb<0)
+  #ifndef NDEBUG
   if(cr<0||cg<0||cb<0)
     cout<<"suspect point:px="<<x<<",py="<<y<<"color:"<<color<<endl;
-#endif /*DEBUG*/
+  #endif /*NDEBUG*/
 }
 
 void
