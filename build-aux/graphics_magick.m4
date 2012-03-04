@@ -8,10 +8,13 @@ AC_DEFUN([AM_PATH_GRAPHICS_MAGICK],
 [dnl 
 dnl Get the cflags and libraries from GraphicsMagick++-config
 dnl
-AC_ARG_ENABLE(gm, 
-[  --disable-gm          do not try to link with graphicmgic, then the output fall back to ppm],
-[AC_MSG_NOTICE([get --disable-gm, skip graphicsmagic probing])],
+AC_MSG_CHECKING([whether attempt to link to graphicmagic])
+AC_ARG_ENABLE([gm], 
+    [AS_HELP_STRING([--disable-gm],
+        [do not try to link with graphicmgic])],
+[AC_MSG_RESULT([get --disable-gm, skip graphicsmagic probing])],
 [
+  AC_MSG_RESULT([yes])
   AC_PATH_PROG([GM_CONFIG], [GraphicsMagick++-config], [no])
   AC_MSG_CHECKING([whether the graphicsmagick lib have been installed])
 
