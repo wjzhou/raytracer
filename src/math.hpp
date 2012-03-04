@@ -67,17 +67,24 @@ public:
 	friend Vec3 operator * ( const Vec3& v, float f ) { return Vec3( v.x * f, v.y * f, v.z * f ); }
 	friend Vec3 operator * ( const Vec3& v1, Vec3& v2 ) { return Vec3( v1.x * v2.x, v1.y * v2.y, v1.z * v2.z ); }
 	friend Vec3 operator * ( float f, const Vec3& v ) { return Vec3( v.x * f, v.y * f, v.z * f ); }
-	union
-	{
-		struct { float x, y, z; };
-		struct { float r, g, b; };
-		struct { float cell[3]; };
-	};
+  union
+  {
+    struct { float x, y, z; };
+    float data[3];
+  };
+  constexpr float operator [] (int i)
+  {
+    return (i==0)?x:((i==1)?y:((i==2)?:z));
+  }
+  
+    
+    
 friend  ostream& operator << (ostream & out,Vec3 vec)
   {
     out<<"["<<vec.x<<","<<vec.y<<","<<vec.z<<"]";
     return out;
   }
+  
   
 };
 

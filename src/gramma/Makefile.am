@@ -36,5 +36,4 @@ bison_sources_generated = \
 	$(srcdir)/stack.hh $(srcdir)/position.hh $(srcdir)/location.hh \
 	$(srcdir)/SceneParser.hpp $(srcdir)/SceneParser.cpp $(srcdir)/SceneScanner.cpp
 
-libgramma_la_SOURCES = $(gramma_sources) $(bison_sources_generated)
-
+libgramma_la_SOURCES = $(gramma_sources) $(bison_sources_generated) $(srcdir)/ply/ply_parser.cpp

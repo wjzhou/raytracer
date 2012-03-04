@@ -30,7 +30,7 @@ do{                                                       \
 %}
 
 %option noyywrap nounput batch debug
-%x IN_COMMENT
+%x IN_COMMENT IN_PLYFILE
 
 %{/* the float is copy from flex manual,C99 float and int does not contains 0, add octal to support 0 int. */
 %}
@@ -102,6 +102,18 @@ blank [ \t]
   return token::FLOAT;
 }
 
+<INITIAL>{
+  ply_file BEGIN(IN_PLYFILE); return token::ply_file;
+}
+<IN_PLYFILE>{
+  [^ \t\n]* {
+    BEGIN(INITIAL);
+    yylval->sval=new std::string(yytext);
+    return token::plyname;
+  }
+}
+
+
 OrthographicCamera  return token::OrthographicCamera;
 PerspectiveCamera  return token::PerspectiveCamera;
 SimplePerspectiveCamera  return token::SimplePerspectiveCamera;
@@ -151,7 +163,7 @@ vertex1 return token::vertex1;
 vertex2 return token::vertex2;
 
 TriangleMesh return token::TriangleMesh;
-ply_file return token::ply_file;
+
 
 MaterialIndex return token::MaterialIndex;
 %%

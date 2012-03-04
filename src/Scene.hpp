@@ -16,6 +16,7 @@
 #include "Light.hpp"
 #include "Material.hpp"
 #include "Object3D.hpp"
+#include "TriangleMesh.hpp"
 #include "Transformation.hpp"
 #include <vector>
 

@@ -6,7 +6,9 @@
 %code requires {
 # include <string>
 # include "../Scene.hpp"
-class ParseDriver;
+#include "ply/TrianglePly.hpp"
+
+  class ParseDriver;
  
 }
 
@@ -45,7 +47,7 @@ class ParseDriver;
 %token        END      0 "end of file"
 %token <ival> Integer
 %token <fval> FLOAT
-%token <sval> string
+%token <sval> plyname
 
 
 %token  OrthographicCamera center direction up PerspectiveCamera angle SimplePerspectiveCamera distance ViewPlane width height pixelsize DirectionalLight position color attenuation PointLight Background
@@ -178,7 +180,15 @@ sphere: Sphere '{' center vec3f radius Float '}'
 {$$=new Sphere(*$4,$6);$$->setMaterialIndex(driver.currentMaterialIndex); delete $4;};
 plane: Plane '{' normal vec3f offset Float '}'{$$=new Plane(*$4,$6);$$->setMaterialIndex(driver.currentMaterialIndex); delete $4;};
 triangle: Triangle '{' vertex0 vec3f vertex1 vec3f vertex2 vec3f '}'{$$=new Triangle(*$4,*$6,*$8);$$->setMaterialIndex(driver.currentMaterialIndex); delete $4;delete $6;delete $8;};
-triangleMesh: TriangleMesh '{' ply_file string '}'{cout<<"TriangleMesh not implemented,file:"<<$4<<endl;};
+triangleMesh: TriangleMesh '{' ply_file plyname '}'
+{
+  cout<<"TriangleMesh file:"<<*$4<<endl;
+  Ply<Vertex,Triangle> ply(*$4);
+  ply.parse();
+  delete $4;
+  $$=new TriangleMesh<Vertex,Triangle>(ply.getVertexs(),ply.getFaces());
+  $$->setMaterialIndex(driver.currentMaterialIndex);
+};
 
 materialIndex: MaterialIndex Integer{driver.currentMaterialIndex=$2;};
 
