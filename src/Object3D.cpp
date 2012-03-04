@@ -17,10 +17,12 @@ Object3D::Object3D()
 {
   materialIndex=0;
 #ifdef DEBUG
-  num=totleNum++;
+  num=totalNum++;
 #endif
 }
-
+#ifdef DEBUG
+int Object3D::totalNum = 0;
+#endif
 
 Sphere::Sphere(Vec3f center, float radius)
  :center(center),radius(radius)
@@ -106,42 +108,92 @@ Plane::getNormal(Vec3f& hitPoint)
   return normal;
 }
 
-Triangle::Triangle(Vec3f a, Vec3f b, Vec3f c)
-  :a(a),b(b),c(c)
+// Triangle::Triangle(Vec3f a, Vec3f b, Vec3f c)
+//   :a(a),b(b),c(c)
+// {
+//   normal=(b-a).cross(c-a);
+//   normal.normalize();
+//   float A1_D=(a.x-b.x)*(a.y-c.y)-(a.x-c.x)*(a.y-b.y);
+//   A1[0]=(a.y-c.y)/A1_D;
+//   A1[1]=(b.y-a.y)/A1_D;
+//   A1[2]=(c.x-a.x)/A1_D;
+//   A1[3]=(a.x-b.x)/A1_D;
+// }
+
+// /* n.(o+td-a)=0
+//  * t=n.(a-o)/n.d  
+//  */
+// Object3D::Result
+// Triangle::intersection(Ray& ray)
+// {
+//   float t=(normal.dot(a-ray.origin))/(normal.dot(ray.direction));
+//   //  cout<<"t"<<t<<endl;
+//   if(t>0 && t<ray.distance){
+//     Vec3f hitPoint=ray.origin+t*ray.direction;
+//     float y[2];
+//     y[0]=a.x-hitPoint.x;
+//     y[1]=a.y-hitPoint.y;
+    
+//     float beta=A1[0]*y[0]+A1[1]*y[1];
+//     if (beta>0 && beta<1){
+//       float garma=A1[2]*y[0]+A1[3]*y[1];
+//       if (garma>0 && beta+garma<1){
+//         ray.distance=t;
+//         ray.hitObject=static_cast<Object3D *>(this);
+//         return Object3D::RESULT_HIT;
+//       }
+//     }
+//   } 
+//   return Object3D::RESULT_MISS;
+// }
+
+// Vec3f
+// Triangle::getNormal(Vec3f& hitPoint)
+// {
+//   return normal;
+// }
+
+
+Triangle::Triangle(Vec3f& a, Vec3f& b, Vec3f& c)
+  :a(a)
 {
   normal=(b-a).cross(c-a);
-  float A1_D=(a.x-b.x)*(a.y-c.y)-(a.x-c.x)*(a.y-b.y);
-  A1[0]=(a.y-c.y)/A1_D;
-  A1[1]=(b.y-a.y)/A1_D;
-  A1[2]=(c.x-a.x)/A1_D;
-  A1[3]=(a.x-b.x)/A1_D;
+  normal.normalize();
+  A=a-b;
+  B=a-c;
+  AB.x=A[1]*B[2]-A[2]*B[1];
+  AB.y=A[2]*B[0]-A[0]*B[2];
+  AB.z=A[0]*B[1]-A[1]*B[0];
 }
 
-/* n.(o+td-a)=0
- * t=n.(a-o)/n.d  
+/* 
+ * 
  */
 Object3D::Result
 Triangle::intersection(Ray& ray)
 {
-  float t=(normal.dot(a-ray.origin))/(normal.dot(ray.direction));
+  float A_D=1/(ray.direction.dot(AB));
+  Vec3f O=a-ray.origin;
+  float t=A_D*(O.dot(AB));
+  Vec3f& d=ray.direction;
+  
   //  cout<<"t"<<t<<endl;
   if(t>0 && t<ray.distance){
-    Vec3f hitPoint=ray.origin+ray.distance*ray.direction;
-    float y[2];
-    y[0]=a.x-hitPoint.x;
-    y[1]=a.y-hitPoint.y;
-    
-    float beta=A1[0]*y[0]+A1[1]*y[1];
-    if (beta<0 || beta>1)
-      return Object3D::RESULT_MISS;
-    float garma=A1[2]*y[0]+A1[3]*y[1];
-    if (garma<0 || beta+garma>1)
-      return Object3D::RESULT_MISS;
-    
-    ray.distance=t;
-    ray.hitObject=static_cast<Object3D *>(this);
-    return Object3D::RESULT_HIT;
-  }
+    float x0=O[1]*d[2]-O[2]*d[1];
+    float x1=O[0]*d[2]-O[2]*d[0];
+    float x2=O[0]*d[1]-O[1]*d[0];
+    float beta=(-B[0]*x0+B[1]*x1-B[2]*x2)*A_D;
+    //float beta=A_D*(B[0]*d[1]*AO[2]-B[1]*d[0]*AO[2]-B[0]*d[2]*AO[1]
+    //            +B[2]d[0]AO[1]+B[1]d[2]AO[0]-B[2]d[1]AO[0])
+    if (beta>=0.0f && beta<=1.0f){
+      float garma=(A[0]*x0-A[1]*x1+A[2]*x2)*A_D;
+      if (garma>=0.0f && beta+garma<=1.0f){
+        ray.distance=t;
+        ray.hitObject=static_cast<Object3D *>(this);
+        return Object3D::RESULT_HIT;
+      }
+    }
+  } 
   return Object3D::RESULT_MISS;
 }
 

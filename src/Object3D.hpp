@@ -28,7 +28,7 @@ private:
   int materialIndex;
 #ifdef DEBUG
   int num;
-  static int totleNum; //for debug
+  static int totalNum; //for debug
 #endif /*DEBUG*/
 };
 
@@ -56,7 +56,7 @@ private:
   Vec3f normal;
   float moffset;  //-offset
 };
-
+/*
 class Triangle : public Object3D
 {
 public:
@@ -69,6 +69,19 @@ private:
   Vec3f c;
   Vec3f normal;
   float A1[4];
+  };*/
+class Triangle : public Object3D
+{
+public:
+  Triangle(Vec3f& a, Vec3f& b, Vec3f& c);
+  virtual Object3D::Result intersection(Ray& ray);
+  virtual Vec3f getNormal(Vec3f& hitPoint);
+private:
+  Vec3f a;
+  Vec3f A;
+  Vec3f B;
+  Vec3f AB;
+  Vec3f normal;
 };
 
 class Group : public Object3D
