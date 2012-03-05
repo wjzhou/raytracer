@@ -26,9 +26,11 @@ Raytracer::doRaytrace()
   /*using default shared, because on mac os x the const Camera will be 
    * predetermined as shard and have error 
    * 'camera' is predetermined 'shared' for 'shared'
-   * while on linux it must been marked as shared*/ 
+   * while on linux it must been marked as shared*/
+#ifdef _OPENMP
   #pragma omp parallel for schedule(dynamic) default(shared)              \
     private(x,y) shared(height,width,topGroup)
+#endif
   /*int nthreads, tid;
     #pragma omp parallel private(nthreads, tid)
   tid = omp_get_thread_num();
@@ -42,18 +44,26 @@ Raytracer::doRaytrace()
       //cout<<x<<" "<<y<<" "<<ray.origin<<" "<<ray.direction<<endl;
       topGroup->intersection(ray);
       if (ray.hitObject==NULL){ /// not hit terminal ray
-         image.setColor(x,y,scene.getBackground());
+        image.setColor(x,y,scene.getBackground());
       }else{
         Vec3f hitPoint=ray.origin+ray.distance*ray.direction;
         Vec3f normal=ray.hitObject->getNormal(hitPoint);
         Material& material=scene.getMaterial(ray.hitObject->getMaterialIndex());
         
         image.setDepth(x,y,ray.distance);
-        image.setColor(x,y,DOT(normal,-ray.direction)*(material.diffuseColor));
-        //cout<<x<<" "<<y<<"hit,distance:"<<ray.distance<<" hitpoint:"<<hitPoint<<"normal:"<<normal<<endl<<endl;
+        Color color=DOT(normal,-ray.direction)*(material.diffuseColor);
+
+#ifndef RELEASE
+        if(color.x<0||color.y<0||color.z<0){
+          cout<<"suspect point:px="<<x<<",py="<<y<<"color:"<<color<<endl;
+          cout<<x<<" "<<y<<"hit,distance:"<<ray.distance<<" hitpoint:"<<hitPoint<<"normal:"<<normal<<"ray"<<ray.direction<<endl<<endl;
+          color.x=color.y=color.z=1.0f; //to make the point easier to seen
+        }
+#endif /*RELEASE*/
+        
+        image.setColor(x,y,color);
       }
-      camera.updateRayX(ray);
     }
-    //    camera.updateRayY(ray);
+      camera.updateRayX(ray);
   }
 }

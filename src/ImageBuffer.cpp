@@ -34,20 +34,16 @@ ImageBuffer::ImageBuffer(int width,int height)
 void
 ImageBuffer::setColor(int x,int y,Color color)
 {    
-  int cr=std::floor(color.r*255);
+  int cr=std::floor(color.x*255);
   if(cr>255)
     cr=255;
-  int cg=std::floor(color.g*255);
+  int cg=std::floor(color.y*255);
   if(cg>255)
     cg=255;
-  int cb=std::floor(color.b*255);
+  int cb=std::floor(color.z*255);
   if(cb>255)
     cb=255;
-  buffer[x+y*width]=(cr<<16)|(cg<<8)|cb;
-  #ifndef NDEBUG
-  if(cr<0||cg<0||cb<0)
-    cout<<"suspect point:px="<<x<<",py="<<y<<"color:"<<color<<endl;
-  #endif /*NDEBUG*/
+  buffer[x+y*width]=((cr&255)<<16)|((cg&255)<<8)|(cb&255);
 }
 
 void
@@ -55,7 +51,7 @@ ImageBuffer::setDepth(int x,int y,float depth)
 {
   float normal=depth/garg_max_depth;
   float invese=1.0-normal;
-  zbuffer[x+y*width]=(normal<0.0f)?0.0f:normal;
+  zbuffer[x+y*width]=(invese<0.0f)?0.0f:invese;
 }
 
 void
