@@ -74,7 +74,7 @@ public:
   };
   constexpr float operator [] (int i)
   {
-    return (i==0)?x:((i==1)?y:((i==2)?:z));
+    return (i==0)?x:((i==1)?y:z);
   }
   
     
