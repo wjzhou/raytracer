@@ -23,7 +23,6 @@ PPMOutputAdaptor::output(std::string& filename,void* buffer,
     for(i=0;i<width;i++){
       if(format==OUTPUT_FORMAT_ARGB){
         int px=((int*)buffer)[i+j*width];
-        int sum=((px>>16)&255)+((px>>8)&255)+((px)&255);
         fs<<((px>>16)&255)<<' '<<((px>>8)&255)<<' '<<(px&255)<<' ';
       }
       else if (format==OUTPUT_FORMAT_GRAY){
