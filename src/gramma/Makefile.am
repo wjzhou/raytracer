@@ -10,8 +10,6 @@ EXTRA_DIST =					\
   $(srcdir)/SceneParser.ypp			\
   $(srcdir)/SceneScanner.lpp
 
-
-
 $(srcdir)/bison.stamp: $(srcdir)/SceneParser.ypp $(srcdir)/SceneScanner.lpp
 	@rm -f bison.tmp
 	@touch bison.tmp
@@ -35,5 +33,5 @@ gramma_sources = $(srcdir)/ParseDriver.cpp
 bison_sources_generated = \
 	$(srcdir)/stack.hh $(srcdir)/position.hh $(srcdir)/location.hh \
 	$(srcdir)/SceneParser.hpp $(srcdir)/SceneParser.cpp $(srcdir)/SceneScanner.cpp
-
+libgramma_la_CXXFLAGS = $(STDCXX_0X) $(DEBUG_CXXFLAGS)
 libgramma_la_SOURCES = $(gramma_sources) $(bison_sources_generated) $(srcdir)/ply/ply_parser.cpp
