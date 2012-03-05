@@ -12,16 +12,15 @@
 #include "Raytracer.hpp"
 #include "math.hpp"
 #include <boost/ptr_container/ptr_array.hpp>
-
 void
 Raytracer::doRaytrace()
 {
-  const Camera& camera=scene.getCamera();
-  Group* topGroup=scene.getTopGroup();
+  const Camera& camera=scenep->getCamera();
+  Group* topGroup=scenep->getTopGroup();
   //cout<<0<<" "<<0<<" "<<ray.origin<<" "<<ray.direction<<endl;
   int x,y;
-  int height=image.height;
-  int width=image.width;
+  int height=imagep->height;
+  int width=imagep->width;
   
   /*using default shared, because on mac os x the const Camera will be 
    * predetermined as shard and have error 
@@ -44,24 +43,19 @@ Raytracer::doRaytrace()
       //cout<<x<<" "<<y<<" "<<ray.origin<<" "<<ray.direction<<endl;
       topGroup->intersection(ray);
       if (ray.hitObject==NULL){ /// not hit terminal ray
-        image.setColor(x,y,scene.getBackground());
-      }else{
-        Vec3f hitPoint=ray.origin+ray.distance*ray.direction;
-        Vec3f normal=ray.hitObject->getNormal(hitPoint);
-        Material& material=scene.getMaterial(ray.hitObject->getMaterialIndex());
-        
-        image.setDepth(x,y,ray.distance);
-        Color color=DOT(normal,-ray.direction)*(material.diffuseColor);
-
+        imagep->setColor(x,y,scenep->getBackground());
+      }else{     
+        imagep->setDepth(x,y,ray.distance);
+        Color color=shaderp->doShading(ray);
 #ifndef RELEASE
         if(color.x<0||color.y<0||color.z<0){
           cout<<"suspect point:px="<<x<<",py="<<y<<"color:"<<color<<endl;
-          cout<<x<<" "<<y<<"hit,distance:"<<ray.distance<<" hitpoint:"<<hitPoint<<"normal:"<<normal<<"ray"<<ray.direction<<endl<<endl;
+          //          cout<<x<<" "<<y<<"hit,distance:"<<ray.distance<<" hitpoint:"<<hitPoint<<"normal:"<<normal<<"ray"<<ray.direction<<endl<<endl;
           color.x=color.y=color.z=1.0f; //to make the point easier to seen
         }
 #endif /*RELEASE*/
-        
-        image.setColor(x,y,color);
+
+        imagep->setColor(x,y,color);
       }
       camera.updateRayX(ray);
     }

@@ -11,6 +11,7 @@
 #include "Scene.hpp"
 Scene::Scene()
 {
+  Object3D::scenep=this;
   topGroup=NULL;  //otherwise the topGoup may contain random values..
 }
 

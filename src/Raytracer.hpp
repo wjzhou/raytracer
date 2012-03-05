@@ -13,17 +13,20 @@
 #define _RAYTRACER_H_
 #include "Scene.hpp"
 #include "ImageBuffer.hpp"
+#include "Shader.hpp"
+
 class Raytracer
 {
 public:
-  Raytracer(Scene& scene, ImageBuffer& image)
-    :scene(scene),image(image){}
+  Raytracer(Scene* scenep, ImageBuffer* imagep, Shader* shaderp)
+    :scenep(scenep),imagep(imagep),shaderp(shaderp){}
   
   void doRaytrace();
 private:
   //this one will not be destroyed for the lifetime..
-  Scene& scene;
-  ImageBuffer& image;
+  Scene* scenep;
+  ImageBuffer* imagep;
+  Shader* shaderp;
 };
 
 

@@ -12,8 +12,10 @@
 #define _OBJECT3D_H_
 #include "common.hpp"
 #include "Ray.hpp"
+#include "Material.hpp"
 #include <boost/ptr_container/ptr_vector.hpp>
 class Ray;
+class Scene;
 class Object3D
 {
 public:
@@ -22,8 +24,9 @@ public:
   virtual ~Object3D(){};
   virtual Object3D::Result intersection(Ray& ray)=0;
   virtual Vec3f getNormal(Vec3f& hitPoint)=0;
-  virtual int getMaterialIndex(){return materialIndex;}
+  Material& getMaterial();
   virtual void setMaterialIndex(int index){materialIndex=index;}
+  static Scene* scenep;
 private:
   int materialIndex;
 #ifdef DEBUG

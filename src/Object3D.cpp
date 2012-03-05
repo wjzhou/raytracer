@@ -12,7 +12,8 @@
 #include <cmath>
 #include "Object3D.hpp"
 #include "common.hpp"
-
+#include "Scene.hpp"
+Scene* Object3D::scenep;//this must been set before use
 Object3D::Object3D()
 {
   materialIndex=0;
@@ -23,6 +24,12 @@ Object3D::Object3D()
 #ifdef DEBUG
 int Object3D::totalNum = 0;
 #endif
+
+Material&
+Object3D::getMaterial()
+{
+  return scenep->getMaterial(materialIndex);
+}
 
 Sphere::Sphere(Vec3f center, float radius)
  :center(center),radius(radius)

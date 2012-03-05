@@ -12,10 +12,12 @@ main(int argc, char *argv[])
       ParseDriver pd(scene);
       pd.parse(opt.getInputFileName());
       ImageBuffer image(garg_xres,garg_yres);
-      Raytracer tracer=Raytracer(scene,image);
+      Shader* shaderp = new SimpleDiffuseShader();
+      Raytracer tracer=Raytracer(&scene,&image,shaderp);
       tracer.doRaytrace();
       image.outputImage(opt.getOutputFileName());
       image.outputDepth(opt.getOutputDepthFileName());
       cout<<"render has been completed."<<endl;
+      delete shaderp;
       return 0;
 }
