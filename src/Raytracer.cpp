@@ -63,7 +63,7 @@ Raytracer::doRaytrace()
         
         image.setColor(x,y,color);
       }
-    }
       camera.updateRayX(ray);
+    }
   }
 }
