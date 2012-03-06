@@ -32,10 +32,11 @@ class Scene
   friend class yy::SceneParser;
 private:
   void setCamera(const Camera* ca){camera=ca;}
-  void newLights(const size_t size){}
-  void addLight(Light* light){}
+  void setDefaultLights();
+  void newLights(const size_t size){lights.reserve(size);}
+  void addLight(Light* light){lights.push_back(light);}
   void setBackground(const Color& bg){background=bg;}
-  void newMaterials(size_t size){materials=boost::ptr_vector<Material>(size);}
+  void newMaterials(size_t size){materials.reserve(size);}
   void addMaterial(Material* material){materials.push_back(material);}
   void newGroup(size_t size);
   void endGroup(size_t size);

@@ -12,7 +12,7 @@
 OrthographicCamera::
 OrthographicCamera(Vec3f& center, Vec3f& direction, Vec3f& up,
                    float width, float height, float pixelsize)
-  :center(center),direction(direction),up(up)
+  :Camera(center,direction,up)
 {
   if(garg_override_pixelsize) //pixelsize command line have highest priority.
     pixelsize=garg_pixelsize;
@@ -61,7 +61,7 @@ OrthographicCamera::updateRayY(Ray& ray) const
  */
 PerspectiveCamera::PerspectiveCamera(Vec3f& center, Vec3f& direction, Vec3f& up,
                                      float fov, float dist)
-  :center(center),direction(direction),up(up)
+  :Camera(center,direction,up)
 {
   float width=std::tan(fov*M_PI/360);//fov/2/360*2*M_PI
   float pixelsize=width/garg_xres;

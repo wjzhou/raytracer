@@ -12,7 +12,8 @@ main(int argc, char *argv[])
       ParseDriver pd(scene);
       pd.parse(opt.getInputFileName());
       ImageBuffer image(garg_xres,garg_yres);
-      Shader* shaderp = new SimpleDiffuseShader();
+      //Shader* shaderp = new SimpleDiffuseShader();
+      Shader* shaderp = new PhongShader(scene);
       Raytracer tracer=Raytracer(&scene,&image,shaderp);
       tracer.doRaytrace();
       image.outputImage(opt.getOutputFileName());

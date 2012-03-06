@@ -50,7 +50,7 @@
 %token <sval> plyname
 
 
-%token  OrthographicCamera center direction up PerspectiveCamera angle SimplePerspectiveCamera distance ViewPlane width height pixelsize DirectionalLight position color attenuation PointLight Background
+%token  OrthographicCamera center direction up PerspectiveCamera angle SimplePerspectiveCamera distance ViewPlane width height pixelsize Lights numLights ambientColor DirectionalLight position color attenuation PointLight Background
 
  /*material*/
 %token  Materials  numMaterials PhongMaterial diffuseColor specularColor exponent transparentColor reflextiveColor indexOfRefraction 
@@ -64,10 +64,10 @@
 %type <yLight>  light pointLight directionalLight
 %type <yObject3D>    object3D group transform sphere plane triangle triangleMesh
 %type <yMaterial>    material phongMaterial
-%type <vec3f>  vec3f viewPlane
+%type <vec3f>  vec3f viewPlane optionAttenuation optionAmbientColor optionSpecularColor
 %type <ival>   materialIndex
 %type <yTransformation>   transformation
-%type <fval>   Float
+%type <fval>   Float optionExponent
 
 %printer    { debug_stream () << *$$; } <sval> <vval>
 %destructor { delete $$; } <sval> <vval>
@@ -89,7 +89,8 @@ center vec3f direction vec3f up vec3f viewPlane
   $$=new OrthographicCamera(*$4,*$6,*$8,$9->x,$9->y,$9->z);
   delete ($4); delete ($6); delete ($8); delete($9);
 };
-
+optionAngle: angle Float
+           | /*empty*/;
 perspectiveCamera: PerspectiveCamera '{'
 center vec3f direction vec3f up vec3f angle Float '}'
 {
@@ -109,25 +110,40 @@ viewPlane: ViewPlane '{' width Float height Float pixelsize Float '}'
 //| /*empty*/
 // {$$=new Vec3f(UNDEFINEDF,UNDEFINEDF,UNDEFINEDF);}
 
-lights: light{};
+lights: Lights '{'
+numLights Integer {driver.scene.newLights($4);}
+lightList
+'}'
+{}
+| /*empty*/
+{
+  driver.scene.setDefaultLights();
+};
+
+lightList: lightList light{driver.scene.addLight($2);}
+         | /*empty*/{};
+
 light: directionalLight {$$=$1;}
      | pointLight  {$$=$1;}
-     | /*empty*/{};
 
-optionAngle: angle Float
-           | /*empty*/;
-
-attenuations: attenuations attenuation vec3f
-            | /*empty*/;
+optionAttenuation: attenuation vec3f{$$=$2;}
+| /*empty*/{$$=NULL;};
 
 directionalLight: DirectionalLight '{'
 position vec3f direction vec3f color vec3f
-optionAngle attenuations'}'
+optionAngle optionAttenuation'}'
 {cout<<"directionLight not implemented";};
 
 pointLight: PointLight '{'
-position vec3f color vec3f attenuations
-'}' {cout<<"PointLight not implemented";};
+position vec3f color vec3f optionAttenuation
+'}' {
+  $$=new PointLight(*$4);
+  $$->setColor($6);
+  $$->setAttenuation($7);
+  delete $4;
+  delete $6;
+  delete $7;
+ };
 
 background: Background '{'
 color vec3f
@@ -144,8 +160,25 @@ materialList: materialList material{driver.scene.addMaterial($2);}
 /*need work*/
 material: phongMaterial{$$=$1;};
 
-phongMaterial: PhongMaterial '{' diffuseColor vec3f
-'}'{$$=new PhongMaterial(*$4);delete $4;};
+optionAmbientColor: ambientColor vec3f {$$=$2;}
+| /*empty*/{$$=NULL;};
+optionSpecularColor: specularColor vec3f {$$=$2;}
+| /*empty*/{$$=NULL;};
+optionExponent: exponent Float {$$=$2;}
+| /*empty*/{$$=0.0f;};
+
+phongMaterial: PhongMaterial '{' diffuseColor vec3f optionAmbientColor optionSpecularColor optionExponent
+'}'
+{
+  $$=new PhongMaterial();
+  $$->setDiffuse($4);
+  $$->setAmbient($5);
+  $$->setSpecular($6);
+  $$->setExponent($7);
+  delete $4;
+  delete $5;
+  delete $6;
+};
 
 group: Group '{'
 numObjects Integer {driver.scene.newGroup($4);}

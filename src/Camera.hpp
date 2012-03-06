@@ -15,11 +15,19 @@
 #include "ViewPlane.hpp"
 class Camera
 {
+  friend class Scene;
 public:
+  Camera(Vec3f center,Vec3f direction,Vec3f up)
+    :center(center),direction(direction),up(up){}
   virtual ~Camera(){};
   virtual void updateRayAt(Ray& ray, int x,int y)const=0;
   virtual void updateRayX(Ray&)const=0;
   virtual void updateRayY(Ray&)const=0;
+protected:
+  Vec3f center;
+  Vec3f direction;
+  Vec3f up;
+  ViewPlane viewplane;
 };
 
 class OrthographicCamera : public Camera
@@ -31,11 +39,6 @@ public:
   virtual void updateRayAt(Ray& ray,int x,int y)const;
   virtual void updateRayX(Ray&)const;
   virtual void updateRayY(Ray&)const;
-protected:
-  Vec3f center;
-  Vec3f direction;
-  Vec3f up;
-  ViewPlane viewplane;
 };
 
 class PerspectiveCamera : public Camera
@@ -47,11 +50,6 @@ public:
   virtual void updateRayAt(Ray& ray,int x,int y)const;
   virtual void updateRayX(Ray&)const;
   virtual void updateRayY(Ray&)const;
-protected:
-  Vec3f center;
-  Vec3f direction;
-  Vec3f up;
-  ViewPlane viewplane;
 };
 
 

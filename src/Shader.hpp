@@ -30,5 +30,15 @@ public:
   virtual ~SimpleDiffuseShader(){};
 };
 
+class PhongShader : public Shader /* for efficent, do not use virtual function here*/
+{
+public:
+  PhongShader(Scene& scene)
+    :scene(scene){};
+  virtual Color doShading(Ray& ray);
+  virtual ~PhongShader(){};
+  Scene& scene;
+};
+
 
 #endif /* _SHADER_H_ */

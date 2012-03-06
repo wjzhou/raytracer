@@ -28,10 +28,38 @@ public:
 class PhongMaterial//: public Material
 {
 public:
-  PhongMaterial(const Color& a_diffuseColor):diffuseColor(a_diffuseColor){};
-  PhongMaterial(Color& a_diffuseColor):diffuseColor(a_diffuseColor){};
-
-  Color diffuseColor;
+  void setAmbient(Color* ambientp)
+  {
+    if (ambientp == NULL) {
+      ambient = Vec3f(0.0f,0.0f,0.0f);
+    } else {
+      ambient = *ambientp;
+    }
+  }
+  void setSpecular(Color* specularp)
+  {
+    if (specularp == NULL) {
+      specular = Vec3f(0.0f,0.0f,0.0f);
+    } else {
+      specular = *specularp;
+    }
+  }
+  void setExponent(float a_exponent)
+  {
+    exponent = a_exponent;
+  }
+  void setDiffuse(Color* diffusep)
+  {
+    if (diffusep == NULL) {
+      diffuse = Vec3f(0.0f,0.0f,0.0f);
+    } else {
+      diffuse = *diffusep;
+    }
+  }  
+  Color diffuse;
+  Color specular;
+  Color ambient;
+  float exponent;
 private:
 };
 typedef PhongMaterial Material;

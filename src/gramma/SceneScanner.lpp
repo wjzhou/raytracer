@@ -125,8 +125,14 @@ distance  return token::distance;
 width     return token::width;
 height    return token::height;
 pixelsize return token::pixelsize;
+Lights    return token::Lights;
+numLights return token::numLights;
+PointLight return token::PointLight;
 position   return token::position;
 color     return token::color;
+ambientColor return token::ambientColor;
+diffuseColor return token::diffuseColor;
+specularColor return token::specularColor;
 attenuation return token::attenuation;
 
 Background return token::Background;
@@ -135,8 +141,6 @@ Materials return token::Materials;
 numMaterials return token::numMaterials;
 
 PhongMaterial return token::PhongMaterial;
-diffuseColor return token::diffuseColor;
-specularColor return token::specularColor;
 exponent return token::exponent;
 transparentColor return token::transparentColor;
 reflextiveColor return token::reflextiveColor;

@@ -14,6 +14,16 @@ Scene::Scene()
   Object3D::scenep=this;
   topGroup=NULL;  //otherwise the topGoup may contain random values..
 }
+void
+Scene::setDefaultLights()
+{
+  newLights(1);
+  PointLight* pl=new PointLight(camera->center);
+  Color white(1.0f,1.0f,1.0f);
+  pl->setColor(&white);
+  addLight(pl);
+}
+
 
 void
 Scene::newGroup(size_t size)
