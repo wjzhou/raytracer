@@ -27,11 +27,13 @@ $(bison_sources_generated): $(srcdir)/bison.stamp
 	fi
 
 noinst_LTLIBRARIES = libgramma.la
-noinst_HEADERS = ParseDriver.hpp
+noinst_HEADERS = $(srcdir)/ParseDriver.hpp $(srcdir)/ply/TrianglePly.hpp \
+                 $(srcdir)/ply/ply_parser.hpp $(srcdir)/ply/ply.hpp      \
+		 $(srcdir)/ply/io_operators.hpp $(srcdir)/ply/byte_order.hpp
 
 gramma_sources = $(srcdir)/ParseDriver.cpp
 bison_sources_generated = \
 	$(srcdir)/stack.hh $(srcdir)/position.hh $(srcdir)/location.hh \
 	$(srcdir)/SceneParser.hpp $(srcdir)/SceneParser.cpp $(srcdir)/SceneScanner.cpp
 libgramma_la_CXXFLAGS = $(STDCXX_0X) $(DEBUG_CXXFLAGS)
-libgramma_la_SOURCES = $(gramma_sources) $(bison_sources_generated) $(srcdir)/ply/ply_parser.cpp
+libgramma_la_SOURCES = $(srcdir)/ply/ply_parser.cpp $(gramma_sources) $(bison_sources_generated) 
