@@ -1,29 +1,57 @@
-This is the simple raytracer for cpsc-566
-Usage:
-unzip and cd to the directory,then:  
-$./configure
-$make
-$./src/raytracer -i /path/to/scenefile
+This is the simple raytracer for cpsc-566. It use blinn-phong shading model, 
+because material properities for this model is eaiser to find.
 
+* Prerequisite
+gcc 4.5+
+boost
+Graphicmagick (optional)
+ 
+* Usage:
+** compile
+unzip and cd to the directory,then:  
+$./configure CXX=/opt/local/bin/g++ CC=/opt/local/bin/gcc
+$make
+
+** execute
+*** render single scene
+$./src/raytracer -i /path/to/scenefile
 The output and depth will be in the current directory
 the default output file will be "output.ppm"
 and default depth  file will be "depth.pgm"
 
-This program has been test under Gentoo linux 2012 with gcc 4.5.3 and Mac os x
-10.7 with g++ and clang++(actually not fully tested under this condition)
+*** render multiply scene
+$cd scene
+$./traceAll
 
-Reference
+* Tested platform
+This program has been test under Gentoo linux 2012 with gcc 4.5.3
+and MAC lion with macport gcc45(4.5.3) boost(1.49.0) GraphicsMagick(1.3.14)
+
+* Reference
 The initial math.hpp is from Jacco Bikker www.bik5.com.
-And the ray sphere intersect code is adapt from his code.
+The material properties are from opengl red book teapot.c
+The ply file parser are from libply by Ares Lagae <ares.lagae@cs.kuleuven.be>
 
-FAQ:
+* FAQ:
 1. The output file may not have desired format.
 If the Graphicmagick does not support the format, it will output a miff(
 Magick image file format) file.
 
 2. If there still some thing wrong with the program, try using minimal set.
-At configure time, try using --disable-gm and --disable-openmp.
-$configure --disable-gm --disable-openmp
+At configure time, try configure using --disable-gm and --disable-openmp.
 
+3. Linker error on mac os x with error: std::ctype<char>::_M_widen_init() const
+It may mixed with code compiled by the default compiler. Especially make sure
+boost and graphicmagick is compiled with the new compiler and get the right 
+version of GraphicsMagick++-config.
 
-
+* Sample scenes:
+#scene with plane sphere and triangles
+$cd scene
+$../src/raytracer -i Objects.txt -o Objects.png -d Objects_dep.png 
+#scene demo specular
+$../src/raytracer -i Specular.txt -o Specular.png -d Specular_dep.png
+#scene demo triangle mesh(may a little slow, need 1 min for my i7 CPU)
+$../src/raytracer -i Teapot.txt -o Teapot.png -d Teapot_dep.png
+#scene with two light source
+$../src/raytracer -i TwoLight.txt -o TwoLight.png -d TwoLight_dep.png
