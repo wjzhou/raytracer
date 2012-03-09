@@ -213,11 +213,11 @@ bool Ply<TMVertex,TMFace>::parse()
   ply_parser.element_definition_callback(std::tr1::bind(&Ply<TMVertex,TMFace>::element_definition_callback, this, _1, _2));
 
   ply::ply_parser::scalar_property_definition_callbacks_type scalar_property_definition_callbacks;
-  Ply::at<ply::float32>(scalar_property_definition_callbacks) = std::tr1::bind(&Ply<TMVertex,TMFace>::scalar_property_definition_callback<ply::float32>, this, _1, _2);
+  scalar_property_definition_callbacks.get<ply::float32>() = std::tr1::bind(&Ply<TMVertex,TMFace>::scalar_property_definition_callback<ply::float32>, this, _1, _2);
   ply_parser.scalar_property_definition_callbacks(scalar_property_definition_callbacks);
 
   ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
-  ply::at<ply::uint8, ply::int32>(list_property_definition_callbacks) = std::tr1::bind(&Ply<TMVertex,TMFace>::list_property_definition_callback<ply::uint8, ply::int32>, this, _1, _2);
+  list_property_definition_callbacks.get<ply::uint8, ply::int32>() = std::tr1::bind(&Ply<TMVertex,TMFace>::list_property_definition_callback<ply::uint8, ply::int32>, this, _1, _2);
   ply_parser.list_property_definition_callbacks(list_property_definition_callbacks);
 
   return ply_parser.parse(ifstream);
