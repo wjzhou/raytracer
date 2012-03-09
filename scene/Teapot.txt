@@ -1,0 +1,38 @@
+
+PerspectiveCamera {
+    center 0 10 1 
+    direction 0 -1 0  
+    up 0 0 1
+    angle 90
+}
+
+Background {
+    color 0.2 0 0.6 
+}
+
+Materials {
+    numMaterials 3
+    PhongMaterial { 
+	diffuseColor 0.07568 0.61424 0.07568
+        ambientColor 0.0215 0.1745 0.0215
+        specularColor 0.633 0.727811 0.633
+        exponent 76.8
+    }
+    PhongMaterial {
+        diffuseColor 0 1 0
+    }
+    PhongMaterial {
+        diffuseColor 0 0 1
+    }
+
+
+}
+
+Group {
+    numObjects 1    
+    MaterialIndex 1
+    TriangleMesh {
+        ply_file teapot.ply
+    }
+}
+

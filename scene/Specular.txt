@@ -1,0 +1,50 @@
+
+OrthographicCamera {
+    center 0 0 10 
+    direction 0 0 -1  
+    up 0 1 0
+    width 5
+    height 5
+}
+
+Lights {
+    numLights 1
+    PointLight {
+       position 3 3 3
+       color    1.0 1.0 1.0
+       }
+}      
+
+Background {
+    color 0 0 0 
+}
+
+Materials {
+    numMaterials 3
+    PhongMaterial { 
+	diffuseColor 0.54 0.89 0.63
+        ambientColor 0.135 0.2225 0.1575
+        specularColor 0.316228 0.316228 0.316228
+        exponent 12.8
+    }
+    PhongMaterial {
+        diffuseColor 0.54 0.89 0.63
+    }
+    PhongMaterial {
+        diffuseColor 0 0 1
+    }
+}
+
+Group {
+    numObjects 2
+    MaterialIndex 0
+    Sphere {
+	center 1 0 0 
+        radius 1 
+    }
+    MaterialIndex 1
+    Sphere {
+	center -1 0 0 
+        radius 1 
+    }
+}
