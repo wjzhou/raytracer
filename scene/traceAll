@@ -1,0 +1,39 @@
+#!/bin/sh
+EXTENSION=txt
+function processfile()
+{
+  filename="$1"
+  f=${filename%.*}
+  echo "Processing $f file..."
+  echo ./raytracer -i "$filename" -o "${f}.tiff" -d  "${f}_depth.tiff"
+  #./raytracer -i "$f" -o ${name}.tiff -d  ${name}depth.tiff
+
+}
+
+function processdir()
+{
+  for filename in $1/*
+  do
+    extension=${filename##*.}
+    if [ "$extension" = "$EXTENSION" ] ; then
+      processfile "$filename"
+    fi
+  done
+
+}
+
+if [ $# -eq 0 ] ; then
+  argv="."
+else
+  argv="$@"
+fi
+
+for arg in "$argv"
+do
+  if [ -f "$arg" ] ; then
+    processfile "$arg"
+  elif [ -d "$arg" ] ; then
+    processdir "$arg"
+  fi
+done
+
