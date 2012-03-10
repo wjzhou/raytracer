@@ -1,13 +1,14 @@
 #!/bin/sh
-EXTENSION=txt
+EXTENSION=${EXT:-txt}
+OUTPUTEXTENSION=${OEXT:-png}
+RAYTRACER=${RAYTRACER:-../src/raytracer}
 function processfile()
 {
   filename="$1"
-  f=${filename%.*}
-  echo "Processing $f file..."
-  echo ./raytracer -i "$filename" -o "${f}.tiff" -d  "${f}_depth.tiff"
-  #./raytracer -i "$f" -o ${name}.tiff -d  ${name}depth.tiff
-
+  name=${filename%.*}
+  echo "\nProcessing $f file..."
+  echo ${RAYTRACER} -i "$filename" -o ${name}.${OUTPUTEXTENSION} -d  ${name}_depth.${OUTPUTEXTENSION}
+  ${RAYTRACER} -i "$filename" -o ${name}.${OUTPUTEXTENSION} -d  ${name}_depth.${OUTPUTEXTENSION}
 }
 
 function processdir()
@@ -19,11 +20,31 @@ function processdir()
       processfile "$filename"
     fi
   done
-
 }
 
+function usage()
+{
+  name=`basename $0`
+  echo "This is a convenient script to invoke raytracer on multiply files and dirs."
+  echo "Usage:"
+  echo "  \$${name} .                          #invoke raytracer on current directory"
+  echo "  \$${name} TwoLights.txt Specular.txt #invoke raytracer on two scene"
+  echo "  \$RAYTRACER=/path/to/raytracer EXT=txt OEXT=png ${name} ."
+  echo "            #invoke the raytracer specific that" 
+  echo "            the execute's path /path/to/raytracer(RAYTRACER)" 
+  echo "            scene file extension txt(EXT) and output extension png(OEXT)"
+}
+
+if [ ! -x $RAYTRACER ] ; then
+  echo "can not find raytracer(default is ../src/raytracer)"
+  usage
+  exit
+fi
+
 if [ $# -eq 0 ] ; then
-  argv="."
+  usage
+  echo "\nUser do not provide paths, default to current directory:"
+  argv=.
 else
   argv="$@"
 fi

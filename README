@@ -21,7 +21,7 @@ and default depth  file will be "depth.pgm"
 
 *** render multiply scene
 $cd scene
-$./traceAll
+$./traceAll .
 
 * Tested platform
 This program has been test under Gentoo linux 2012 with gcc 4.5.3
