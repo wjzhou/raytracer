@@ -6,4 +6,4 @@ raytracer_CPPFLAGS = $(BOOST_CPPFLAGS) $(GM_CPPFLAGS) -I$(top_srcdir)/gramma $(O
 raytracer_CXXFLAGS = $(STDCXX_0X) $(GM_CXXFLAGS) $(OPENMP_CXXFLAGS) $(DEBUG_CXXFLAGS)
 raytracer_LDFLAGS = $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(GM_LDFLAGS) $(OPENMP_CFLAGS)
 raytracer_LDADD = gramma/libgramma.la $(BOOST_PROGRAM_OPTIONS_LIBS) $(GM_LIBS)
-SUBDIRS = gramma
+SUBDIRS = math gramma

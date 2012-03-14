@@ -1,0 +1,743 @@
+\documentclass[notitlepage,a4paper,dvipdfm]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{color}
+\usepackage{epsfig}
+\usepackage{listings}
+
+\newcommand{\template}[2]{\textbf{#1$<$#2$>$}}
+\newcommand{\templaten}[1]{\textbf{#1}}
+\newcommand{\tpar}[1]{\textbf{#1}}
+
+\newcommand{\concept}[2]{\textit{#1$<$#2$>$}}
+\newcommand{\conceptn}[1]{\textit{#1}}
+
+\newcommand{\keyw}[1]{\textsl{#1}}
+\newcommand{\func}[1]{\textbf{#1}}
+\newcommand{\const}[1]{\textbf{#1}}
+\newcommand{\class}[1]{\textbf{#1}}
+\newcommand{\id}[1]{#1}
+
+\newcommand{\R}{\mathrm R}
+\newcommand{\N}{\mathrm N}
+\newcommand{\I}{\mathrm I}
+
+\newcommand{\bref}[1]{[\ref{#1}]}
+
+\newcommand{\mathlib}{{\sf math2}}
+\newcommand{\mathlibr}{$\mathlib_\mathit{dr1\alpha}$}
+
+\lstdefinelanguage{mathlib_conecepts}
+	{morekeywords={static,bool,int,float,template,void,class,const,
+		struct,concept,typedef,operator,true,false,explicit,union},
+	sensitive,}[keywords]
+\newcommand{\Matrix}{\conceptn{Matrix}}
+\newcommand{\Vector}{\conceptn{Vector}}
+
+\lstset{language=mathlib_conecepts}
+\lstset{keywordstyle=\keyw}
+\lstset{escapechar=!}
+\lstset{mathescape=true}
+\lstset{breaklines=true}
+
+\title{math2}
+\author{Daniel Wesslèn}
+
+\begin{document}
+
+{\center
+	{\huge\mathlibr{} documentation}\\
+	{\small graphlib.sourceforge.net}\\
+}
+\vspace{1cm}
+
+\tableofcontents
+%\newpage
+
+\section{Introduction}
+\label{intro}
+
+\mathlib{} is a free (public domain) mathematics library, specializing
+in high speed calculations for small matrices.
+\\
+\\
+\noindent
+A lot of this document contains information that is not neccesary if all you 
+want to do is use \mathlib{} for some calculations, so feel free to skip ahead.
+It is however recommended that you read the chapters Introduction \bref{intro},
+Templates \bref{templates}, Functions \bref{functions},
+Constants \bref{constants} and Examples \bref{examples} before using
+\mathlib{}.
+Doing so will help you avoid reimplementing something that can already
+be done using \mathlib{}.
+
+Several different notations are in use for matrices, the rest of this 
+docuentation describes matrices and vectors as used in \mathlib, 
+to avoid confusion.
+
+\subsection{Matrices}
+\index{Matrix}
+A matrix with 4 columns and 2 rows is called a $4 \times 2$ matrix.
+The element at row 3, column 1 in the matrix $A$ is $A_{31}$.
+
+\[A_{2 \times 3} = A_{ij} = 
+\left[\begin{array}{ccc}
+	A_{11} & A_{12} & A_{13} \\
+	A_{21} & A_{22} & A_{23}
+\end{array}\right]\]
+
+The primary representation of a matrix in \mathlib{} is
+\templaten{matrix} \bref{matrix}.
+While element indices start at one in this documentation, because
+that is the normal mathematical notation, they start at zero in C++.
+
+The set of fully supported matrix sizes is $r \times c$ where
+$(r,c) \in [1,4]^2$.
+Matrices with one side larger than 4 are supported for some operations,
+in particular most elementwise operations are supported.
+$1 \times 1$ matrices behave like scalars.
+
+\subsection{Vectors}
+\index{Vector}
+A vector is a column matrix, meaning that a $\R^d$ vector is a
+$d \times 1$ matrix and can be used wherever such a matrix is expected.
+
+\[v \in \R^3 = v_i = 
+\left[\begin{array}{c}
+	v_{1} \\
+	v_{2} \\
+	v_{3} 
+\end{array}\right]
+=
+\left[\begin{array}{c}
+	v_{11} \\
+	v_{21} \\
+	v_{31} 
+\end{array}\right]
+= \left( v_1, v_2, v_3 \right)^{\rm t}\]
+
+To increase readability, $\R^4$, $\R^3$ and $\R^2$ vectors have named elements.
+\[v_{\rm xyzw} = v_{\rm stuv} = v_{\rm rgba}\]
+\[v_{\rm xyz} = v_{\rm stu} = v_{\rm rgb}\]
+\[v_{\rm xy} = v_{\rm st}\]
+
+The primary representation of a vector in \mathlib{} is
+\templaten{vector} \bref{vector}.
+
+\subsection{Concepts}
+\index{Concept}
+A concept is a set of requirements.
+Any class that meets the requirements is said to implement the concept.
+
+The arguments to most functions in \mathlib{} are required to be instances
+of specific concepts rather than classes, this is beacuse of the expression 
+template technique described in \bref{exprtempl}.
+
+It is usually ok to think of a \conceptn{Matrix} as a \templaten{matrix},
+a \conceptn{Vector} as a \templaten{vector}, etc.
+Concepts are described in more detail in \bref{concepts}.
+
+
+\section{Templates}
+\label{templates}
+
+\subsection{Matrix}
+\label{matrix}
+\index{Matrix}
+\begin{lstlisting}{matrix_t}
+class !\template{matrix}{Rows, Cols = Rows}!
+	: !\template{tmatrix}{\template{basic\_matrix}{Rows, Cols}}! {
+	!\templaten{matrix}!(!\concept{Matrix}{Rows, Cols}!);
+	!\templaten{matrix}!(!\conceptn{Initializer}!);
+	!\templaten{matrix}!();
+
+	!Member operators are described in \bref{arithmetic}.!
+}
+\end{lstlisting}
+
+
+\subsection{Vector}
+\label{vector}
+\index{Vector}
+\begin{lstlisting}{matrix_t}
+class !\template{vector}{Rows}!
+	: !\template{tmatrix}{\template{basic\_matrix}{Rows, 1}}! {
+	!\templaten{vector}!(!\concept{Vector}{Rows}!);
+	!\templaten{vector}!(!\conceptn{Initializer}!);
+	!\templaten{vector}!();
+
+	explicit !\templaten{vector}!(float);
+	!Fills the vector.!
+
+	!\templaten{vector}!(float, float);
+	!\templaten{vector}!(float, float, float);
+	!\templaten{vector}!(float, float, float, float);
+	!Only the constructor with the same number of elements as the number of rows actually work.!
+
+	!Member operators are described in \bref{arithmetic}.!
+}
+\end{lstlisting}
+
+\subsection{Basic\_matrix}
+\label{basic_matrix}
+The template \template{basic\_matrix}{Rows, Cols} provides storage for
+\templaten{matrix} and \templaten{vector}.
+%
+It does not implement any of the major concepts but provides the required 
+members (\conceptn{MatrixBase} \bref{matrix_base_c}) for use as a base class to 
+\templaten{tmatrix} for implementing \conceptn{Matrix} or \conceptn{Vector}.
+
+\begin{lstlisting}{basic_matrix_t}
+class !\template{basic\_matrix}{Rows, Cols}! {
+	float union { x, s, r }
+	float union { y, t, g }
+	float union { z, u, b }
+	float union { w, v, a }
+	!Named vector elements. Only exists when \tpar{Cols} = 1 and the number of rows is suitable.!
+
+	float &operator()(int r, int c);
+	float operator()(int r, int c) const;
+	!Element access.!
+
+	float &operator()(int r);
+	float operator()(int r) const;
+	!Element access. For vectors only.!
+
+	float *data();
+	const float *data() const;
+	!Elements in column major order.!
+
+	!\template{matrix}{Rows, Cols}! &matrix()
+	const !\template{matrix}{Rows, Cols}! &matrix() const
+	!Casts the object to \templaten{matrix}.!
+
+	void assign(float, float);
+	void assign(float, float, float);
+	void assign(float, float, float, float);
+	!Assignment for vectors. Only the one with the same number of elements as the number of rows exists.!
+}
+\end{lstlisting}
+
+\section{Functions}
+\label{functions}
+
+\subsection{Arithmetic}
+\label{arithmetic}
+
+\begin{lstlisting}{}
+!\concept{Matrix}{R,C}! !\func{operator+}!(!\concept{Matrix}{R,C}!, !\concept{Matrix}{R,C}!)
+!\concept{LMatrix}{R,C}! !\func{operator+=}!(!\concept{LMatrix}{R,C}!, !\concept{Matrix}{R,C}!)
+	!Memberwise addition. $A + B$.!
+
+!\concept{Matrix}{R,C}! !\func{operator-}!(!\concept{Matrix}{R,C}!, !\concept{Matrix}{R,C}!)
+!\concept{LMatrix}{R,C}! !\func{operator-=}!(!\concept{LMatrix}{R,C}!, !\concept{Matrix}{R,C}!)
+	!Memberwise subtraction. $A + B$.!
+
+!\concept{Matrix}{R,C}! !\func{operator-}!(!\concept{Matrix}{R,C}!)
+	!Unary negate. $-A$.!
+
+!\concept{Matrix}{A,C}! !\func{operator*}!(!\concept{Matrix}{A,B}!, !\concept{Matrix}{B,C}!)
+!\concept{LMatrix}{A,A}! !\func{operator*=}!(!\concept{LMatrix}{A,A}!, !\concept{Matrix}{A,A}!)
+	!Matrix multiplication. $AB$.!
+
+!\concept{Matrix}{R,C}! !\func{operator*}!(!\concept{Matrix}{R,C}!, float)
+!\concept{Matrix}{R,C}! !\func{operator*}!(float, !\concept{Matrix}{R,C}!)
+!\concept{LMatrix}{A,C}! !\func{operator*=}!(!\concept{LMatrix}{A,B}!, float)
+	!Memberwise multiplication. $Aa$, $aA$.!
+
+!\concept{Vector}{R}! !\func{operator*}!(!\concept{Vector}{R}!, !\concept{Vector}{R}!)
+!\concept{LVector}{R}! !\func{operator*=}!(!\concept{LVector}{R}!, !\concept{Vector}{R}!)
+	!Memberwise multiplication. $v_i u_i$.!
+
+!\concept{Matrix}{R,C}! !\func{operator/}!(!\concept{Matrix}{R,C}!, float)
+!\concept{LMatrix}{A,C}! !\func{operator/=}!(!\concept{LMatrix}{A,B}!, float)
+	!Memberwise division. $v_i / a$.!
+
+!\concept{Vector}{R}! !\func{operator/}!(!\concept{Vector}{R}!, !\concept{Vector}{R}!)
+!\concept{LVector}{R}! !\func{operator/=}!(!\concept{LVector}{R}!, !\concept{Vector}{R}!)
+	!Memberwise division. $v_i / u_i$.!
+
+!\concept{Vector}{3}! !\func{cross}!(!\concept{Vector}{3}!, !\concept{Vector}{3}!)
+	!Vector product. $v \times u$.!
+
+float !\func{dot}!(!\concept{Vector}{R}!, !\concept{Vector}{R}!)
+	!Scalar product. $v \cdot u$, $v^{\rm t} u$.!
+
+!\concept{Vector}{R}! !\func{reciprocal}!(!\concept{Vector}{R}!)
+	!Elementwise reciprocal. $1 / v_i$.!
+
+float !\func{abs}!(!\conceptn{Vector}!)
+	!The absolute value of $v$. $|v|$, $\sqrt{v \cdot v}$.!
+
+float !\func{abs\_squared}!(!\conceptn{Vector}!)
+	!The squared absolute value of $v$. $|v|^2$, $v \cdot v$.!
+
+!\concept{Vector}{R}! !\func{norm}!(!\concept{Vector}{R}!)
+	!The norm of $v$. $v / |v|$.!
+
+float !\func{det}!(!\concept{Matrix}{A,A}!)
+float !\func{det}!(!\concept{Vector}{2}!, !\concept{Vector}{2}!)
+float !\func{det}!(!\concept{Vector}{3}!, !\concept{Vector}{3}!, !\concept{Vector}{3}!)
+float !\func{det}!(float $x_1$, float $y_1$, float $x_2$, float $y_2$)
+float !\func{det}!(float $x_1$, $y_1$, $z_1$, $x_2$, $y_2$, $z_2$, $x_3$, $y_3$, $z_3$)
+	!Determinant. $\det A$.!
+
+!\concept{Matrix}{A,A}! !\func{inverse}!(!\concept{Matrix}{A,A}!)
+	!Inverse. $A^{-1}$.!
+
+!\concept{Matrix}{C,R}! !\func{transpose}!(!\concept{Matrix}{R,C}!)
+	!Transpose. $R_{ij} = A_{ji}$. $A^{\rm t}$.!
+
+!\concept{Matrix}{R-1,C-1}! !\func{cofactor}$<i$,$j>$!(!\concept{Matrix}{R,C}!)
+	!Remove row $i$ and column $j$ form $A$. $\mathrm{cofactor} \; A_{ij}$!
+
+!\concept{Matrix}{C,R}! !\func{adjoint}!(!\concept{Matrix}{R,C}!)
+	!Adjoint. $R_{ij} = (-1)^{i+j} \; \det \mathrm{cofactor} \; A_{ji}$. Currently only implemented for square matrices.!
+
+!\concept{Vector}{3}! !\func{wdiv}!(!\concept{Vector}{4}!)
+	!Perspective division. Converts from homogenous coordinates to cartesian space. $v_{\rm xyz} / v_{\rm w}$.!
+
+!\template{matrix}{R,C}! !\func{temp}!(!\concept{Matrix}{R,C}!)
+	!Evaluate to a temporary variable. Workaround for aliasing expressions.!
+
+\end{lstlisting}
+
+
+\subsection{Indexing}
+Indexing transformations are described in detail in \bref{indexing}.
+
+\begin{lstlisting}{}
+!\conceptn{Indexer}! !\conceptn{Indexer}!::!\func{operator,}!(!\conceptn{Indexer}!)
+	!Concatenate indexing transformations.!
+
+!\conceptn{Indexer}! !\conceptn{Indexer}!::!\func{operator()}!(!\conceptn{Indexer}!)
+	!Concatenate indexing transformations. Apply argument first.!
+
+!\conceptn{Matrix}! !\conceptn{Matrix}!::!\func{operator[]}!(!\conceptn{Indexer}!)
+	!Generic indexing.!
+
+\end{lstlisting}
+
+\subsection{IO and assignment}
+
+\begin{lstlisting}{}
+!\conceptn{LMatrix} $<<$! $a, b, c, d, e \dots$
+	!Assign elements to matrix.!
+
+!\class{ostream} !&!\func{operator}!$<<$(!\class{ostream}! &, !\templaten{matrix}!)
+	!Print matrix.!
+
+!\class{ostream} !&!\func{operator}!$<<$(!\class{ostream}! &, !\templaten{vector}!)
+	!Print vector.!
+
+\end{lstlisting}
+
+
+\section{Constants}
+\label{constants}
+
+In addition to the normal constants there are close to one hundred indexing 
+objects that may be used to subscript matrices, these are documented in 
+\bref{indexing}.
+
+\begin{lstlisting}{}
+!\conceptn{Initializer} \const{zero}!
+	!All zeros. $\mathbf 0$.!
+
+!\conceptn{Initializer} \const{identity}!
+	!Identity matrix. $\I$.!
+
+!float \const{pi}!
+	!Pi. $\pi$.!
+
+!float \const{ln\_2}!
+	!Natural logarithm of 2. $\log 2$.!
+
+!float \const{epsilon}!
+	!Same as! std::numeric_limits<float>::epsilon()
+
+\end{lstlisting}
+
+\section{Indexing}
+\label{indexing}
+
+It is possible to provide an alternate view of the data stored in a matrix 
+without performing actual calculations on the data.
+This is done by altering the element index calculation rather than altering
+the data at the location.
+
+Custom indexing modes can be created by making a new type that implements
+\conceptn{Indexer}.
+
+Aliasing between elements is detected and handled to eliminate repeated
+calculations in all indexing modes except concatenation.
+An aliased submatrix may not be used as an lvalue.
+
+\subsection{Primitive transformations}
+
+\subsubsection{Element selection}
+A $1 \times 1$ matrix representing the element at the designated position is 
+generated.
+Note that a $1 \times 1$ matrix behaves like a scalar.
+
+There are indexing objects for all of the named elements --- \id x, \id y,
+\id z, \id w, \id s, \id t, \id u, \id v, \id r, \id g, \id b, \id a.
+
+\subsubsection{Transpose}
+Transposing $A$ generates $B = A^{\rm t}$, where $B_{ij} = A_{ji}$.
+
+There is a transpose indexing object \id{tr}, but the function should
+be preferred for readability.
+Using the indexing object is the only way to get a transposed
+\conceptn{LMatrix}.
+
+\subsubsection{Cofactor}
+The cofactor of an element $A_{ij}$ is the matrix formed by removing
+row $i$ and column $j$ from $A$.
+
+There are no indexing objects for cofactoring, use the function instead.
+There is currently no way to get a cofactored \conceptn{LMatrix},
+the feature is believed to be useless but could trivially be added.
+
+\subsubsection{Submatrix selection}
+Submatrices are selected using two ranges, $R = [r_1,r_2]$ and $C = [c_1,c_2]$.
+A submatrix is formed from all elements $A_{ij}$ in the source matrix
+where $i \in R$ and $j \in C$.
+
+The ranges may be \emph{restricted}.
+In a restricted range all positions in the range have to exist in
+the matrix.
+In a non-restricted range the largest subrange for which all positions 
+are valid is used.
+
+Indexing objects are provided for selecting specific rows and columns,
+any submatrix rooted at $A_{11}$ and any row or column range.
+Note that any submatrix can per definition be selected by concatenating 
+a row- and a column range selection.
+
+\id r$i$ = row $i+1$. \id c$i$ = column $i+1$.
+
+\id m$ij$ = $A_{rc}$ where $(r,c) \in [1, i][1, j]$.
+
+\id r$ij$ = all rows $\in [i+1, j+1]$.
+\id c$ij$ = all columns $\in [i+1, j+1]$.
+
+\subsubsection{Swizzle}
+Swizzling is the most general primitive indexing transformation.
+It is currently only supported for vectors.
+
+A vector swizzling is described by a sequence of row indices
+$I = (i_1, i_2 \dots)$.
+The currently supported set of swizzlings is $\N^d$, where $d \in [2,4]$.
+The element selection indexing transformation is more generic and
+easier to use than $N^1$ swizzling would be and matrices with either
+side larger than 4 are not completely supported anyway.
+Aliasing between elements is allowed for rvalues.
+%
+Applying a $\N^d$ swizzling $I$ to a vector $v$ produces a $\R^d$ vector
+$u$ where $u_j = v_{i_j}$.
+
+There are indexing objects with coordinate names for all swizzlings
+where $i_{j+1} > i_j$, i.e.\ \id{xy}, \id{su}, \id{xw} \dots
+\ \id{stu}, \id{xyw} \dots.
+Using color names there are objects for conversion between color storage
+formats. \id{rgb}, \id{bgra}, \id{argb} \dots.
+The combinations that have no names can be created by stacking element
+selectors.
+
+\subsection{Composite transformations}
+
+\subsubsection{Concatenation}
+Indexing transformations may be concatenated using the comma or application
+operators.
+Aliasing is not handled when concatenation is used.
+
+The effect of a concatenated transformation $T = U V$ is that of
+applying first $U$, then $V$. $A_T = A_{UV} = (A_U)_V$.
+
+\subsubsection{Stacking}
+Two general submatrices described by indexing objects, may be stacked
+on top of each other to form a larger submatrix.
+
+Applying a stacking transformation $T = (U, V)$ to a matrix $A$ yields
+\[A_T = 
+\left[\begin{array}{c}
+	A_U \\
+	A_V
+\end{array}\right]\]
+
+Stacking is applied using the bitwise or operator.
+Stacking element selectors has the same effect as swizzling.
+
+
+%\newpage
+\appendix
+
+\section{Understanding \mathlib{}}
+\label{understanding}
+
+\subsection{Delayed evaluation}
+\label{exprtempl}
+
+In order to minimize the use of temporaries in expressions
+\mathlib{} uses delayed evaluation for its operations ---
+the evaluation of operations is delayed until the final assignment.
+
+Instead of returning a \templaten{matrix} most operations on matrices return
+a closure object with information about the operation encoded in its type.%
+\footnote{Closure objects with information encoded in the type are sometimes 
+called \emph{expression templates}.}
+The closure objects implement \conceptn{Matrix} and are virtually
+indestiguishable from a \templaten{matrix} containing the result of the
+operation.
+
+As an example, the type of $A v + u$ is 
+\template{tmatrix}{\template{matrix\_binop}{binop\_add, 
+\template{matrix\_binop}{binop\_mmul$<$4$>$, \template{basic\_matrix}{4, 4}, 
+\template{basic\_matrix}{4, 1}}, \template{basic\_matrix}{4, 1}}}.
+
+In order to evaluate the expression we start decomposing the expression tree.
+If there is an evaluation function for the current expression it is used,
+otherwise the operands are evaluated.
+The expression is then recombined with the same operation but with
+completely evaluated arguments.
+
+\subsection{Elementwise evaluation}
+The closure objects described in \bref{exprtempl} provides information
+about the entire expression.
+This information may be used to evaluate a larger part of the expression
+than simply the root.
+
+An important case where this is possible is in expressions where the elements 
+of the resulting matrix may be evaluated one at a time without having to
+perform any nontrivial reevaluation of elements in the subexpressions.
+
+For example the expression $(v a + u b) / c$ is evaluated using no temporaries
+larger than a \lstinline!float!.
+
+\subsection{Aliasing}
+The delayed evaluation mechanism implies that some part of the right hand side
+of an assignment may be overwritten during evaluation of the assignment.
+%
+Because of this, aliasing between the left and right side of an assignment is
+not allowed in \mathlib.
+
+The restriction against aliasing together with the techniques described
+above is what makes \mathlib{} so fast, some inconvenience is the price
+you pay.
+
+Despite the general restriction, all elementwise expressions where 
+$(A\ op\ B)_{ij} = A_{ij}\ op\ B_{ij}$ are unaffected by the aliasing problem.
+This includes any combination of addition, subtraction, division and non-matrix
+multiplication.
+
+\subsection{SIMD operations}
+Single Instruction Multiple Data (SIMD) specialized instructions
+are supported when using GCC 3.2 with SSE instructions enabled
+and when using Visual C++ 7.1 and optimizing for Pentium 4 or better.
+
+When SIMD specializations are used it is important to minimize data
+movement between registers and memory.
+Because of this, it is usually better to perform vector operations
+on entire vectors even if only the results for some of the elements are
+actually needed.
+
+The instruction usually used to copy vectors, \texttt{movaps},
+assumes that all memory references are 16 byte aligned.
+That assumption may not always be valid --- the runtime library
+may not be able to provide appropriately aligned stack or heap objects.
+A properly aligned stack may be inaproppriately offset by externally compiled
+code if your code is used as a callback.
+These issues must be considered when using SIMD specializations.
+
+If the alignment requirements cannot be met, SIMD support may be disabled
+by defining \texttt{MATHLIB\_NO\_SIMD}.
+
+%Most of the the SIMD specializations for vectors are not subject to 
+%delayed evaluation, 
+
+
+\subsection{Better sorry than safe}
+``Better sorry than safe, unless being safe is free'' is the design
+philosophy of \mathlib.
+The implications of this is that there are no runtime correctnes checks
+for special cases or errors.
+In particular, the restriction against aliasing is not enforced
+--- sometimes aliased expressions will be evaluated correctly, sometimes 
+they will not.
+
+There are also cases where compile time checks could be used, to detect
+element aliasing when using concatenated indexing modes for instance.
+This has not been done because it would incur a significant increase in
+compile time.
+
+Since there is no way for a program to issue compile time warnings from a 
+template, potentially dangerous constructs are silently accepted.
+
+%\subsection{How smart is \mathlib?}
+%Most cases where elementwise evaluation can be used are detected and handled
+%automatically.
+
+%\mathlib{} does \emph{not} handle cases where an expression could be
+%evaluated more efficiently if the operands were reordered.
+
+%One should remember that the worst case for \mathlib{} is roughly
+%equivalent to the normal case for naive code.
+
+\subsection{Requirements}
+Ideally, \mathlib{} would be very portable since is does not require any 
+special features from the compiler or environment but. In real life, few
+compilers are yet good enough at handling templates to support \mathlib{}.
+
+Performance may be increased if the compiler supports unaliased references.
+Performance is greatly increased if the compiler and platform support
+SIMD vector operations.
+
+\begin{description}
+\item[GCC] is the compiler mostly used to develop \mathlib{} and is thus
+	fully supported. The SIMD specializations are only supported
+	on GCC 3.1 and later. Just about any version of GCC should
+	be able to compile \mathlib{} with a few modifications.
+	Recent versions (3.2 or better) work as-is.
+\item[Visual C++]
+	Visual C++ .NET 2003 (7.1) is the first version conformant
+	enough to compile \mathlib{}. Don't bother trying with
+	earlier versions. SIMD is supported.
+\end{description}
+
+Please report results from other compilers to 
+$<$wesslen@users.sourceforge.net$>$.
+
+\section{Concepts}
+\label{concepts}
+
+In the concept descriptions all \lstinline!static!s are also \lstinline!const!s.
+
+\subsection{Matrix}
+\label{matrix_c}
+
+\begin{lstlisting}{matrix_c}
+concept !\concept{Matrix}{Rows, Cols}! : !\template{tmatrix}{Rows, Cols, Base}! {
+	!\tpar{Base} has to implement \conceptn{MatrixBase}.!
+}
+\end{lstlisting}
+
+\subsection{Vector}
+\label{vector_c}
+
+\begin{lstlisting}{vector_c}
+concept !\concept{Vector}{Rows}! : !\concept{Matrix}{Rows, 1}! {
+}
+\end{lstlisting}
+
+
+\subsection{LMatrix}
+
+A \conceptn{LMatrix} is a \conceptn{Matrix} that can be assigned to.
+
+\begin{lstlisting}{lmatrix_c}
+concept !\concept{LMatrix}{Rows, Cols}! : !\concept{Matrix}{Rows, Cols}! {
+	static bool is_lvalue = true;
+}
+\end{lstlisting}
+
+
+\subsection{LVector}
+
+A \conceptn{LVector} is a \conceptn{Vector} that can be assigned to.
+
+\begin{lstlisting}{lvector_c}
+concept !\concept{LVector}{Rows}! : !\concept{Vector}{Rows}! {
+	static bool is_lvalue = true;
+}
+\end{lstlisting}
+
+\subsection{MatrixBase}
+\label{matrix_base_c}
+
+\begin{lstlisting}{matrix_base_c}
+concept !\conceptn{MatrixBase}! {
+	static int rows, columns; !The size of the matrix.!
+	static bool element_op; !If the matrix is a candidate for elementwise evaluation.!
+	static bool is_storage; !If the elements of the matrix may be accessed without performing a calculation.!
+	static bool is_lvalue; !If the matrix can be assigned to.!
+	static bool error; !If there is an error in the matrix.!
+	typedef base_type; !The type itself.!
+	template<int i, int j> float element() const; !Read element.!
+}
+\end{lstlisting}
+If the matrix is to be used as an \conceptn{LMatrix} it also requires
+\begin{lstlisting}{matrix_base_c}
+	template<int i, int j> float &element(); !Read/write element.!
+\end{lstlisting}
+
+\subsection{Indexer}
+\label{indexer_c}
+
+\begin{lstlisting}{indexer_c}
+concept !\conceptn{Indexer}! : !\template{matrix\_indexer}{I}! {
+	!\template{index\_info}{I, T} has to implement \conceptn{IndexDescriptor}.!
+}
+\end{lstlisting}
+
+\subsection{IndexDescriptor}
+\label{index_descriptor_c}
+
+\begin{lstlisting}{index_descriptor_c}
+concept !\concept{IndexDescriptor}{I, Base}! {
+	static int rows, columns; !The size of the resulting matrix.!
+	static bool aliasing; !If the indexer causes self-aliasing.!
+	static bool error; !If there is an error in the indexer.!
+	static unsigned element_mask; !Bitmask indicating which elements from the original matrix are extracted by the indexer.!
+
+	template<int R, int C> struct index {
+		static int r, c; !Original location representing R, C.!
+	}
+}
+\end{lstlisting}
+
+
+\section{Examples}
+\label{examples}
+
+\subsection{Basics}
+\begin{lstlisting}{language=C++}
+#include <math/matrix.h>
+	// !Include matrix classes for declarations. Not needed if the line below is used.!
+#include <math/matrix.tpp> // !Include matrix classes for usage.!
+
+using namespace math; // !Use the \mathlib{} namespace.!
+
+matrix<4> A, B, C;	// $A_{4 \times 4}$, $B_{4 \times 4}$, $C_{4 \times 4}$
+matrix<3,2> D;		// $D_{3 \times 2}$
+vector<4> v;		// $v \in \R^4$
+
+A = identity;		// $A \leftarrow \I$
+A(0,2) = 1;		// $A_{13} \leftarrow 1$
+
+v = zero;		// $v \leftarrow \mathbf 0$
+v.x = 1;		// $v_{\rm x} \leftarrow 1$
+v[x] = 1;		// $v_{\rm x} \leftarrow 1$
+v(0) = 1;		// $v_{\rm x} \leftarrow 1 \Leftrightarrow v_1 \leftarrow 1$
+
+A = B * C;		// $A \leftarrow BC$
+A *= B;			// $A \leftarrow AB$
+\end{lstlisting}
+
+\subsection{Indexing}
+\begin{lstlisting}{language=C++}
+transpose(A)		// $A^{\rm t}$
+v[xz]			// $v_{\rm xz}$
+v[a|g|r|b]		// $v_{\rm agrb}$ !Custom swizzling thru stacking.!
+v[x|x]			// $v_{\rm xx}$ !Element aliasing is allowed.!
+A[r2]			// !Row 3 of $A$.!
+A[c0]			// !Column 1 of $A$.!
+A[r0,c1]		// $A_{12}$
+A[r12,c12]		// !$2 \times 2$ submatrix from the center of $A$.!
+\end{lstlisting}
+
+
+\section{License}
+\mathlibr{} was placed in public domain 2003 by Daniel Wesslén \\
+$<$wesslen@users.sourceforge.net$>$
+
+\end{document}

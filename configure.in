@@ -34,5 +34,6 @@ AC_OPENMP
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+                 src/math/Makefile
                  src/gramma/Makefile])
 AC_OUTPUT
