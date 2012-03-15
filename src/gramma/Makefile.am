@@ -35,5 +35,6 @@ gramma_sources = $(srcdir)/ParseDriver.cpp
 bison_sources_generated = \
 	$(srcdir)/stack.hh $(srcdir)/position.hh $(srcdir)/location.hh \
 	$(srcdir)/SceneParser.hpp $(srcdir)/SceneParser.cpp $(srcdir)/SceneScanner.cpp
+libgramma_la_CPPFLAGS = -I../math/include
 libgramma_la_CXXFLAGS = $(STDCXX_0X) $(DEBUG_CXXFLAGS)
 libgramma_la_SOURCES = $(srcdir)/ply/ply_parser.cpp $(gramma_sources) $(bison_sources_generated) 

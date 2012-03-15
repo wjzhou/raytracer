@@ -11,7 +11,7 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 #include "config.hpp"
-#include "math.hpp"
+#include "math/matrix.h"
 
 typedef Vec3 Vec3f;
 typedef Vec3 Color;
