@@ -11,10 +11,10 @@ template<class Base> struct tmatrix2;
 
 namespace bits {
 
-template<bool> struct static_assert;
+template<bool> class static_assert_math;
 
 template<>
-struct static_assert<true> {
+struct static_assert_math<true> {
 	typedef void test;
 };
 

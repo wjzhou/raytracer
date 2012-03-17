@@ -40,11 +40,11 @@ public:
 
 	math::vector<Rows, Type> &vector() {
 	
-		typedef typename static_assert<Cols == 1>::test test;
+		typedef typename static_assert_math<Cols == 1>::test test;
 		return *static_cast<math::vector<Rows, Type> *>(this);
 	}
 	const math::vector<Rows, Type> &vector() const {
-		typedef typename static_assert<Cols == 1>::test test;
+		typedef typename static_assert_math<Cols == 1>::test test;
 		return *static_cast<const math::vector<Rows, Type> *>(this);
 	}
 };
