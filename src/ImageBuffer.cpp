@@ -55,17 +55,15 @@ ImageBuffer::setDepth(int x,int y,float depth)
 }
 
 void
-ImageBuffer::outputImage(string& output)
+ImageBuffer::outputImage(std::string& output)
 {
   iout->output(output,buffer,width,height,
               ImageOutputAdaptor::OUTPUT_FORMAT_ARGB);
 }
 
 void
-ImageBuffer::outputDepth(string& depth)
+ImageBuffer::outputDepth(std::string& depth)
 {
   iout->output(depth,zbuffer,width,height,
               ImageOutputAdaptor::OUTPUT_FORMAT_GRAY);
 }
-
-

@@ -3,16 +3,19 @@ ViewPlane::ViewPlane(Vec3f& center, Vec3f& direction, Vec3f& up,
                      float width, float height, float pixelsize, float dist)
 {
   //cout<<"ViewPlane center:"<<center<<" width:"<<width<<" height:"<<height<<" pixelsize: "<<pixelsize<<endl<<" direction:"<<direction<<" up:"<<up<<endl;
-  direction.normalize();
-  up.normalize();
-  
-  Vec3f xaxis=direction.cross(up); // x=y cross z, because up is -y, change the order 
-  Vec3f down=direction.cross(xaxis); 
+  //direction.normalize(); //change to new math library
+  direction/=abs(direction);
+  //up.normalize(); //change to new math library
+  up/=abs(up);
+  Vec3f xaxis=cross(direction,up); // x=y cross z, because up is -y, change the order 
+  Vec3f down=cross(direction,xaxis); 
   /** although xaxis and down should be unit length by principle,
    *  normalnize again for round off.
    */
-  xaxis.normalize();
-  down.normalize();
+  //xaxis.normalize(); //change to new math library
+  xaxis/=abs(xaxis);
+  //down.normalize(); //change to new math library
+  down/=abs(down);
   //cout<<"ViewPlane1 xasix:"<<xaxis<<"down: "<<down<<endl;
   Vec3f centerOfview=center+direction*dist;
 

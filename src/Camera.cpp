@@ -24,7 +24,8 @@ OrthographicCamera(Vec3f& center, Vec3f& direction, Vec3f& up,
   garg_yres=height/garg_pixelsize;
   //a copy of viewplane is not very costy, using it to simplify the code ..
   viewplane=ViewPlane(center,direction,up,width,height,pixelsize,0.0f);
-  this->direction.normalize();//the direction may not normalized.
+  //this->direction.normalize();//the direction may not normalized. //change to new math library
+  this->direction/=abs(this->direction);
 }
 
 inline void
@@ -32,7 +33,7 @@ OrthographicCamera::updateRayAt(Ray&ray, int x,int y) const
 {
   //this function will not been called often.
   //using double here to reduce the round error may be a good idea.
-  ray.currView=ray.currViewY=viewplane.leftTop+x*viewplane.dxaxis+y*viewplane.dyaxis;
+  ray.currView=ray.currViewY=viewplane.leftTop+float(x)*viewplane.dxaxis+float(y)*viewplane.dyaxis;
   ray.origin=ray.currView;
   ray.direction=direction;
 }
@@ -74,11 +75,12 @@ PerspectiveCamera::updateRayAt(Ray& ray, int x,int y) const
 {
   //this function will not been called often.
   //using double here to reduce the round error may be a good idea.
-  ray.currView=ray.currViewY=viewplane.leftTop+x*viewplane.dxaxis+y*viewplane.dyaxis;
+  ray.currView=ray.currViewY=viewplane.leftTop+float(x)*viewplane.dxaxis+float(y)*viewplane.dyaxis;
 
   ray.origin=center;
   ray.direction=ray.currView-ray.origin;
-  ray.direction.normalize();
+  //ray.direction.normalize(); //change to new math library
+  ray.direction/=abs(ray.direction);
 }
 
 inline void
@@ -86,7 +88,8 @@ PerspectiveCamera::updateRayX(Ray& ray) const
 {
   ray.currView+=viewplane.dxaxis;
   ray.direction=ray.currView-ray.origin;
-  ray.direction.normalize();
+  //ray.direction.normalize(); //change to new math library
+  ray.direction/=abs(ray.direction);
 }
 inline void
 PerspectiveCamera::updateRayY(Ray& ray) const
@@ -94,5 +97,6 @@ PerspectiveCamera::updateRayY(Ray& ray) const
   ray.currViewY+=viewplane.dyaxis;
   ray.currView=ray.currViewY;
   ray.direction=ray.currView-ray.origin;
-  ray.direction.normalize();
+  //ray.direction.normalize(); //change to new math library
+  ray.direction/=abs(ray.direction);
 }

@@ -9,6 +9,7 @@
  * 
  */
 #include "Scene.hpp"
+#include "iostream"
 Scene::Scene()
 {
   Object3D::scenep=this;
@@ -37,7 +38,7 @@ void
 Scene::endGroup(size_t check)
 {
   if(check!=currGroup->getSize())
-    cout<<"wrong objects in group,ignore numObject parameter."<<endl;
+    std::cout<<"wrong objects in group,ignore numObject parameter."<<std::endl;
   currGroup=groups.back();
   groups.pop_back();
 }

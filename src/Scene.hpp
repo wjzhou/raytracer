@@ -11,7 +11,6 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 #include "common.hpp"
-#include "math.hpp"
 #include "Camera.hpp"
 #include "Light.hpp"
 #include "Material.hpp"

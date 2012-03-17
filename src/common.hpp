@@ -11,10 +11,15 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 #include "config.hpp"
-#include "math/matrix.h"
+#include "math/include/math/matrix.h"
 
-typedef Vec3 Vec3f;
-typedef Vec3 Color;
+
+typedef math::vector<3> Vec3f;
+typedef math::vector<3> Color;
+
+const float EPSILON=0.0001f;
+const int TRACEDEPTH=6;
+
 typedef unsigned int Pixel;
 extern float garg_max_depth;
 extern bool garg_override_xres;

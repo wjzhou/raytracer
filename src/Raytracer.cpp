@@ -10,7 +10,8 @@
  */
 
 #include "Raytracer.hpp"
-#include "math.hpp"
+#include "common.hpp"
+#include <iostream>
 #include <boost/ptr_container/ptr_array.hpp>
 void
 Raytracer::doRaytrace()
@@ -49,7 +50,7 @@ Raytracer::doRaytrace()
         Color color=shaderp->doShading(ray);
 #ifndef RELEASE
         if(color.x<0||color.y<0||color.z<0){
-          cout<<"suspect point:px="<<x<<",py="<<y<<"color:"<<color<<endl;
+          std::cout<<"suspect point:px="<<x<<",py="<<y<<"color:"<<color<<std::endl;
           //          cout<<x<<" "<<y<<"hit,distance:"<<ray.distance<<" hitpoint:"<<hitPoint<<"normal:"<<normal<<"ray"<<ray.direction<<endl<<endl;
           color.x=color.y=color.z=1.0f; //to make the point easier to seen
         }

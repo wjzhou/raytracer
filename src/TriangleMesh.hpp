@@ -40,8 +40,8 @@ public:
   virtual Object3D::Result intersection(Ray& ray);
   virtual Vec3f getNormal(Vec3f& hitPoint);
 private:
-  vector<TMVertex> vertexs;
-  vector<TMFace> faces;
+  std::vector<TMVertex> vertexs;
+  std::vector<TMFace> faces;
 };
 
 template <typename TMVertex,typename TMFace>

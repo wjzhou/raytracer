@@ -54,8 +54,8 @@ Object3D::Result
 Sphere::intersection(Ray& ray) 
 {
   Vec3f v=ray.origin-center;
-  float b=-DOT(v,ray.direction);
-  float det=(b*b)-DOT(v,v)+radius2;
+  float b=-dot(v,ray.direction);
+  float det=(b*b)-dot(v,v)+radius2;
   //cout<<"direction"<<ray.direction<<"origin"<<ray.origin<<endl;
   //cout<<"center"<<center<<"radius"<<radius<<"det:"<<det<<endl<<endl;
   if (det<EPSILON) //it is not a good idea to compare with 0
@@ -100,7 +100,7 @@ Plane::Plane(Vec3f normal, float offset)
 Object3D::Result
 Plane::intersection(Ray& ray)
 {
-  float t=(moffset-normal.dot(ray.origin))/(normal.dot(ray.direction)); //divid 0 is ok
+  float t=(moffset-dot(normal,ray.origin))/dot(normal,ray.direction); //divid 0 is ok
   if(t>0 && t< ray.distance){                               //for ieee745
     ray.distance=t;
     ray.hitObject=static_cast<Object3D *>(this);
@@ -164,13 +164,13 @@ Plane::getNormal(Vec3f& hitPoint)
 Triangle::Triangle(Vec3f& a, Vec3f& b, Vec3f& c)
   :a(a)
 {
-  normal=(b-a).cross(c-a);
-  normal.normalize();
+  normal=cross((b-a),(c-a));
+  normal=norm(normal);
   A=a-b;
   B=a-c;
-  AB.x=A[1]*B[2]-A[2]*B[1];
-  AB.y=A[2]*B[0]-A[0]*B[2];
-  AB.z=A[0]*B[1]-A[1]*B[0];
+  AB.x=A(1)*B(2)-A(2)*B(1);
+  AB.y=A(2)*B(0)-A(0)*B(2);
+  AB.z=A(0)*B(1)-A(1)*B(0);
 }
 
 /* 
@@ -179,21 +179,19 @@ Triangle::Triangle(Vec3f& a, Vec3f& b, Vec3f& c)
 Object3D::Result
 Triangle::intersection(Ray& ray)
 {
-  float A_D=1/(ray.direction.dot(AB));
+  float A_D=1/dot(ray.direction,AB);
   Vec3f O=a-ray.origin;
-  float t=A_D*(O.dot(AB));
+  float t=A_D*dot(O,AB);
   Vec3f& d=ray.direction;
   
   //  cout<<"t"<<t<<endl;
   if(t>0 && t<ray.distance){
-    float x0=O[1]*d[2]-O[2]*d[1];
-    float x1=O[0]*d[2]-O[2]*d[0];
-    float x2=O[0]*d[1]-O[1]*d[0];
-    float beta=(-B[0]*x0+B[1]*x1-B[2]*x2)*A_D;
-    //float beta=A_D*(B[0]*d[1]*AO[2]-B[1]*d[0]*AO[2]-B[0]*d[2]*AO[1]
-    //            +B[2]d[0]AO[1]+B[1]d[2]AO[0]-B[2]d[1]AO[0])
+    float x0=O(1)*d(2)-O(2)*d(1);
+    float x1=O(0)*d(2)-O(2)*d(0);
+    float x2=O(0)*d(1)-O(1)*d(0);
+    float beta=(-B(0)*x0+B(1)*x1-B(2)*x2)*A_D;
     if (beta>=0.0f && beta<=1.0f){
-      float garma=(A[0]*x0-A[1]*x1+A[2]*x2)*A_D;
+      float garma=(A(0)*x0-A(1)*x1+A(2)*x2)*A_D;
       if (garma>=0.0f && beta+garma<=1.0f){
         ray.distance=t;
         ray.hitObject=static_cast<Object3D *>(this);

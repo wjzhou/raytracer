@@ -13,7 +13,7 @@
 #define _IMAGEBUFFER_H_
 
 #include "config.hpp"
-#include "math.hpp"
+#include "common.hpp"
 #include "ImageOutputAdaptor.hpp"
 class ImageBuffer
 {
@@ -21,8 +21,8 @@ public:
   ImageBuffer(int width,int height);
   void setColor(int x,int y,Color color);
   void setDepth(int x,int y,float depth);
-  virtual void outputImage(string& output);
-  virtual void outputDepth(string& depth);
+  virtual void outputImage(std::string& output);
+  virtual void outputDepth(std::string& depth);
   virtual ~ImageBuffer(){};
 
   int width;

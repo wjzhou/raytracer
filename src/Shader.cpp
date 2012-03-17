@@ -1,4 +1,3 @@
-#include "math.hpp"
 #include "Shader.hpp"
 #include "Material.hpp"
 #include <boost/foreach.hpp>
@@ -11,7 +10,7 @@ SimpleDiffuseShader::doShading(Ray& ray)
   Vec3f hitPoint=ray.origin+ray.distance*ray.direction;
   Vec3f normal=ray.hitObject->getNormal(hitPoint);
   Material& material=ray.hitObject->getMaterial();
-  return DOT(normal,-ray.direction)*(material.diffuse);
+  return dot(normal,-ray.direction)*(material.diffuse);
 }
 
 Color
@@ -25,19 +24,20 @@ PhongShader::doShading(Ray& ray)
   boost::ptr_vector<Light>& lights=scene.getLights();
   for (light=lights.begin();light < lights.end(); light++){
     Vec3f lightVector=light->getLightVector(hitPoint);
-    float distance=lightVector.length();
-    lightVector.normalize();
+    float distance=abs(lightVector);
+    lightVector/=distance;
     //constant linear quadratic 
-    float attenuation= 1.0f / (light->attenuation[0]+light->attenuation[1]*distance
-    +light->attenuation[2]*distance*distance);
+    float attenuation= 1.0f / (light->attenuation(0)+light->attenuation(1)*distance
+                               +light->attenuation(2)*distance*distance);
       //float attenuation=1.0f;
     Color ambient=light->ambient*material.ambient*attenuation;
-    Color diffuse=light->diffuse*DOT(normal,-ray.direction)*(material.diffuse)*attenuation;
+    Color diffuse=light->diffuse*dot(normal,-ray.direction)*(material.diffuse)*attenuation;
 
     if(material.exponent!=0.0f){
       Vec3f halfVector=lightVector-ray.direction;
-      halfVector.normalize();
-      float half=std::max(0.0f, normal.dot(halfVector));
+      //halfVector.normalize(); //change to new math library
+      halfVector/=abs(halfVector);
+      float half=std::max(0.0f, dot(normal,halfVector));
       float powerFactor=std::pow(half, material.exponent);
       Color specular=light->specular*material.specular*powerFactor*attenuation;
       color+=specular;

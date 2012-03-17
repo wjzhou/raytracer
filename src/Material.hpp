@@ -11,7 +11,7 @@
 #ifndef _MATEIAL_H_
 #define _MATEIAL_H_
 
-#include "math.hpp"
+#include "common.hpp"
 /*class Material
 {
 public:
