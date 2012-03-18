@@ -6,6 +6,13 @@ PerspectiveCamera {
     angle 120
 }
 
+Lights {
+    numLights 1
+    PointLight {
+       position -3 2 0
+       color    1 1 1
+      }
+}
 
 Background {
     color 0 0 0

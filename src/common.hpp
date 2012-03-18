@@ -12,12 +12,13 @@
 #define _COMMON_H_
 #include "config.hpp"
 #include "math/include/math/matrix.h"
-
+#include <limits>
 
 typedef math::vector<3> Vec3f;
 typedef math::vector<3> Color;
 
-const float EPSILON=0.0001f;
+const float EPSILON_BOUNUS=std::numeric_limits<float>::epsilon();
+const float EPSILON=std::numeric_limits<float>::epsilon();
 const int TRACEDEPTH=6;
 
 typedef unsigned int Pixel;

@@ -31,7 +31,11 @@ PhongShader::doShading(Ray& ray)
                                +light->attenuation(2)*distance*distance);
       //float attenuation=1.0f;
     Color ambient=light->ambient*material.ambient*attenuation;
-    Color diffuse=light->diffuse*dot(normal,-ray.direction)*(material.diffuse)*attenuation;
+    color+=ambient;
+    float normalLight=dot(normal,lightVector);
+    if (normalLight<=0.0f)
+      continue;
+    Color diffuse=light->diffuse*(material.diffuse)*(normalLight*attenuation);
 
     if(material.exponent!=0.0f){
       Vec3f halfVector=lightVector-ray.direction;
@@ -42,10 +46,59 @@ PhongShader::doShading(Ray& ray)
       Color specular=light->specular*material.specular*powerFactor*attenuation;
       color+=specular;
     }
-    color+=ambient;
-    color+=diffuse;
+    color+=diffuse;    
+  }
+  return color;
+}
 
+PhongShaderWithShadow::PhongShaderWithShadow(Scene& scene)
+ :scene(scene)
+{
+  topGroup=scene.getTopGroup();
+}
+
+Color
+PhongShaderWithShadow::doShading(Ray& ray)
+{
+  Vec3f hitPoint=ray.origin+ray.distance*ray.direction;
+  Vec3f normal=ray.hitObject->getNormal(hitPoint);
+  Material& material=ray.hitObject->getMaterial();
+  Color color(0.0f,0.0f,0.0f);
+  boost::ptr_vector<Light>::iterator light;
+  boost::ptr_vector<Light>& lights=scene.getLights();
+  for (light=lights.begin();light < lights.end(); light++){
+    Vec3f lightVector=light->getLightVector(hitPoint);
+    float distance=abs(lightVector);
+    lightVector/=distance;
+    //constant linear quadratic 
+    float attenuation= 1.0f / (light->attenuation(0)+light->attenuation(1)*distance
+                               +light->attenuation(2)*distance*distance);
+      //float attenuation=1.0f;
+    Color ambient=light->ambient*material.ambient*attenuation;
+    color+=ambient;
+    float normalLight=dot(normal,lightVector);
+    if (normalLight<=0.0f)
+      continue;
+    Ray shadowRay;
+    shadowRay.origin=hitPoint;
+    shadowRay.direction=lightVector;
+    shadowRay.distance=distance;
+    shadowRay.hitObject=ray.hitObject;
+    topGroup->intersection(shadowRay);
+    if(shadowRay.distance < distance) //in shadow
+      continue;
+    Color diffuse=light->diffuse*(material.diffuse)*(normalLight*attenuation);
     
+    if(material.exponent!=0.0f){
+      Vec3f halfVector=lightVector-ray.direction;
+      //halfVector.normalize(); //change to new math library
+      halfVector/=abs(halfVector);
+      float half=std::max(0.0f, dot(normal,halfVector));
+      float powerFactor=std::pow(half, material.exponent);
+      Color specular=light->specular*material.specular*powerFactor*attenuation;
+      color+=specular;
+    }
+    color+=diffuse;
   }
   return color;
 }

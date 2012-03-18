@@ -13,7 +13,8 @@ main(int argc, char *argv[])
       pd.parse(opt.getInputFileName());
       ImageBuffer image(garg_xres,garg_yres);
       //Shader* shaderp = new SimpleDiffuseShader();
-      Shader* shaderp = new PhongShader(scene);
+      //Shader* shaderp = new PhongShader(scene);
+      Shader* shaderp = new PhongShaderWithShadow(scene);
       Raytracer tracer=Raytracer(&scene,&image,shaderp);
       tracer.doRaytrace();
       image.outputImage(opt.getOutputFileName());
