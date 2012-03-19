@@ -18,6 +18,7 @@ class Shader
 {
 public:
   Shader(){}
+  static Shader* getShader(std::string shadingMethod,Scene& scene);
   virtual Color doShading(Ray& ray)=0;
   virtual ~Shader(){};
 };

@@ -3,7 +3,17 @@
 #include <boost/foreach.hpp>
 #include "Light.hpp"
 #include "Scene.hpp"
+#include <iostream>
 #include <algorithm>
+Shader* Shader::getShader(std::string shadingMethod,Scene& scene)
+{
+    if ( shadingMethod == "simple" ) return new SimpleDiffuseShader();
+    if ( shadingMethod == "blinn_phong" ) return new PhongShader(scene);
+    if ( shadingMethod == "blinn_phong_shadow" )
+      return new PhongShaderWithShadow(scene);
+    std::cout<<"unknown shading method:"<<shadingMethod<<std::endl;
+    exit(4);
+}
 Color
 SimpleDiffuseShader::doShading(Ray& ray)
 {
