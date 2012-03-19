@@ -75,6 +75,10 @@ try{
   po::options_description orthographic ("Orthographic Camera options");
   orthographic.add_options()
     ("pixelsize,p", po::value<float>(&garg_pixelsize)->default_value(0.005f), "Override the pixelsize setting in file");
+
+  po::options_description shading("Shading method options");
+  shading.add_options()
+    ("shadingMethod,s", po::value<string>(&shadingMethod)->default_value("blinn_phong_shadow"), "Select shading method, allowed value:\nsimple: assume light is at view point\nblinn_phong: using blinn-phong model\nblinn_phong_shadow: using blinn-phong model with hard shadow");
   
   po::options_description misc("Miscellaneous options");
   misc.add_options()
@@ -86,7 +90,7 @@ try{
     ;
     
   po::options_description all("All allowed options");
-  all.add(generic).add(required).add(perspective).add(orthographic).add(misc);
+  all.add(generic).add(required).add(shading).add(perspective).add(orthographic).add(misc);
 
   po::options_description show("Options");
   show.add(generic).add(required);
@@ -148,7 +152,10 @@ std::string& Options::getOutputDepthFileName()
   return depth;
 }
 
-
+std::string& Options::getShadingMethod()
+{
+  return shadingMethod;
+}
 
 
 /*

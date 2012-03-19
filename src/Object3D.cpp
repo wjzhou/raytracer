@@ -53,6 +53,8 @@ Sphere::Sphere(Vec3f center, float radius)
 Object3D::Result
 Sphere::intersection(Ray& ray) 
 {
+  if (ray.hitObject == this)
+    return Object3D::RESULT_MISS;
   Vec3f v=ray.origin-center;
   float b=-dot(v,ray.direction);
   float det=(b*b)-dot(v,v)+radius2;
@@ -101,7 +103,7 @@ Object3D::Result
 Plane::intersection(Ray& ray)
 {
   float t=(moffset-dot(normal,ray.origin))/dot(normal,ray.direction); //divid 0 is ok
-  if(t>0 && t< ray.distance){                               //for ieee745
+  if(ray.hitObject!=this && t>EPSILON_BOUNUS && t< ray.distance){                               //for ieee745
     ray.distance=t;
     ray.hitObject=static_cast<Object3D *>(this);
     return Object3D::RESULT_HIT;
@@ -183,9 +185,9 @@ Triangle::intersection(Ray& ray)
   Vec3f O=a-ray.origin;
   float t=A_D*dot(O,AB);
   Vec3f& d=ray.direction;
-  
+
   //  cout<<"t"<<t<<endl;
-  if(t>0 && t<ray.distance){
+  if(ray.hitObject!=this && t>EPSILON_BOUNUS && t<ray.distance){
     float x0=O(1)*d(2)-O(2)*d(1);
     float x1=O(0)*d(2)-O(2)*d(0);
     float x2=O(0)*d(1)-O(1)*d(0);

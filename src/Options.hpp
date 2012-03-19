@@ -20,12 +20,14 @@ public:
   std::string& getInputFileName();
   std::string& getOutputFileName();
   std::string& getOutputDepthFileName();
+  std::string& getShadingMethod();
   //int getXres(){return xres;}
   //int getYres(){return yres;}
 private:
   std::string input;
   std::string output;
   std::string depth;
+  std::string shadingMethod;
   //int xres;
   //int yres;
   std::string config_file;

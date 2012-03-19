@@ -18,6 +18,7 @@ class Shader
 {
 public:
   Shader(){}
+  static Shader* getShader(std::string shadingMethod,Scene& scene);
   virtual Color doShading(Ray& ray)=0;
   virtual ~Shader(){};
 };
@@ -40,5 +41,14 @@ public:
   Scene& scene;
 };
 
+class PhongShaderWithShadow : public Shader /* for efficent, do not use virtual function here*/
+{
+public:
+  PhongShaderWithShadow(Scene& scene);
+  virtual Color doShading(Ray& ray);
+  virtual ~PhongShaderWithShadow(){};
+  Scene& scene;
+  Group* topGroup;
+};
 
 #endif /* _SHADER_H_ */
