@@ -13,6 +13,7 @@
 #include <boost/program_options.hpp>
 #include "common.hpp"
 #include "Options.hpp"
+Options options;
 namespace po = boost::program_options;
 using namespace std;
 float garg_max_depth;

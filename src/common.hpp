@@ -25,7 +25,8 @@ typedef math::vector<3> Color;
 const float VARIABLE_IS_NOT_USED EPSILON_BOUNUS=std::numeric_limits<float>::epsilon();
 const float VARIABLE_IS_NOT_USED EPSILON=std::numeric_limits<float>::epsilon();
 const int TRACEDEPTH=6;
-
+class Options;
+extern Options options;
 typedef unsigned int Pixel;
 extern float garg_max_depth;
 extern bool garg_override_xres;
