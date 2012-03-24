@@ -150,8 +150,8 @@ struct index_info<index_submatrix<R1, C1, R2, C2, RR, RC>, A> {
 		columns = int(max_cols) > A::columns
 		? int(A::columns) : int(max_cols) };
 	enum { error = rows <= 0 || columns <= 0
-		|| RR && int(max_rows) > A::rows
-		|| RC && int(max_cols) > A::columns };
+           || (RR && int(max_rows) > A::rows)
+           || (RC && int(max_cols) > A::columns) };
 	enum { element_mask = mask<R1>::rows_ge
 		& mask<R2>::rows_le & mask<C1>::cols_ge & mask<C2>::cols_le };
 	enum { aliasing = false };

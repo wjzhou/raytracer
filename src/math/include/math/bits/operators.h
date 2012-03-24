@@ -59,9 +59,6 @@ operator/(const tmatrix_dim<R, 1, A, T> &a, const tmatrix_dim<R, 1, B, T> &b)
 	{ return typename tmatrix2<bits::matrix_binop<bits::binop_div, A, B> >::type(a, b); }
 
 
-#pragma warning(push)
-#pragma warning(disable: 4244)
-
 // assign to matrix
 template<int R, int C, class T, class ST, class ST2> inline
 matrix_assigner<R, C, 1, T> operator<<(tmatrix_dim<R, C, T, ST> &dest, ST2 f)
@@ -74,8 +71,6 @@ matrix_assigner<R, C, 1, T> operator<<(const tmatrix_dim<R, C, T, ST> &d, ST2 f)
 	T &dest = const_cast<T &>(static_cast<const T &>(d));
 	dest.template element<0,0>() = f; return dest;
 }
-
-#pragma warning(pop)
 
 
 // compare matrices
