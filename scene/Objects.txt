@@ -48,7 +48,7 @@ Materials {
 }
 
 Group {
-    numObjects 12
+    numObjects 18
     MaterialIndex 0
     Triangle {
         vertex0 1 1 1
