@@ -1,4 +1,13 @@
 #include "Camera.hpp"
+#include "SuperSampling.hpp"
+void
+Camera::initSuperSampling()
+{
+  sampling=SuperSampling::getSuperSamplingByName(options.getSuperSamplingMethod(),
+                                                 options.getSuperSamplingSamples(),
+                                                 viewplane.dxaxis,viewplane.dyaxis);
+}
+
 /** 
  * Prepare the Orthographic Camera for generate Rays.
  * 
@@ -26,6 +35,7 @@ OrthographicCamera(Vec3f& center, Vec3f& direction, Vec3f& up,
   viewplane=ViewPlane(center,direction,up,width,height,pixelsize,0.0f);
   //this->direction.normalize();//the direction may not normalized. //change to new math library
   this->direction/=abs(this->direction);
+  initSuperSampling();
 }
 
 inline void
@@ -50,6 +60,11 @@ OrthographicCamera::updateRayY(Ray& ray) const
   ray.currViewY+=viewplane.dyaxis;
   ray.origin=ray.currView=ray.currViewY;
 }
+void
+OrthographicCamera::adjust(Ray& ray,int i) const
+{
+  ray.origin=ray.currView+sampling->adjustPosition(i);  
+}
 
 /** 
  * Prepare the Prespective Camera for generate Rays.
@@ -68,6 +83,7 @@ PerspectiveCamera::PerspectiveCamera(Vec3f& center, Vec3f& direction, Vec3f& up,
   float pixelsize=width/garg_xres;
   float height=pixelsize*garg_yres;
   viewplane=ViewPlane(center,direction,up,width,height,pixelsize,1.0f);
+  initSuperSampling();
 }
 
 inline void
@@ -98,5 +114,11 @@ PerspectiveCamera::updateRayY(Ray& ray) const
   ray.currView=ray.currViewY;
   ray.direction=ray.currView-ray.origin;
   //ray.direction.normalize(); //change to new math library
+  ray.direction/=abs(ray.direction);
+}
+void
+PerspectiveCamera::adjust(Ray& ray, int i) const
+{
+  ray.direction=ray.currView+sampling->adjustPosition(i)-ray.origin;
   ray.direction/=abs(ray.direction);
 }
