@@ -10,7 +10,7 @@ struct matrix_binop<binop_mul, A, B> {
 		columns = possibly_A::columns };
 	enum { is_storage = false };
 	enum { is_lvalue = false };
-	enum { error = A::error || B::error };
+	enum { error = static_cast<int>(A::error) || static_cast<int>(B::error) };
 	enum { element_op = A::element_op && B::element_op };
 	typedef matrix_binop<binop_mul, A, B> base_type;
 	typename matrix_ref<A>::type a;
@@ -27,7 +27,7 @@ struct matrix_binop<binop_cross, A, B> {
 		columns = 1 };
 	enum { is_storage = false };
 	enum { is_lvalue = false };
-	enum { error = A::error || B::error
+	enum { error = static_cast<int>(A::error) || static_cast<int>(B::error)
 		|| !is_vector_3<A>::value || !is_vector_3<B>::value };
 	enum { element_op = A::is_storage && B::is_storage };
 	typedef matrix_binop<binop_cross, A, B> base_type;
@@ -50,7 +50,7 @@ struct matrix_binop<binop_div, A, B> {
 		columns = possibly_A::columns };
 	enum { is_storage = false };
 	enum { is_lvalue = false };
-	enum { error = A::error || B::error };
+	enum { error = static_cast<int>(A::error) || static_cast<int>(B::error) };
 	enum { element_op = A::element_op && B::element_op };
 	typedef matrix_binop<binop_div, A, B> base_type;
 	typename matrix_ref<A>::type a;
@@ -67,8 +67,8 @@ struct matrix_binop<binop_add, A, B> {
 		columns = A::columns };
 	enum { is_storage = false };
 	enum { is_lvalue = false };
-	enum { error = A::error || B::error || int(A::rows) != B::rows
-		|| int(A::columns) != B::columns };
+	enum { error = static_cast<int>(A::error) || static_cast<int>(B::error) || static_cast<int>(A::rows) != static_cast<int>(B::rows)
+           || static_cast<int>(A::columns) != static_cast<int>(B::columns) };
 	enum { element_op = A::element_op && B::element_op };
 	typedef matrix_binop<binop_add, A, B> base_type;
 	typename matrix_ref<A>::type a;
@@ -85,8 +85,8 @@ struct matrix_binop<binop_sub, A, B> {
 		columns = B::columns };
 	enum { is_storage = false };
 	enum { is_lvalue = false };
-	enum { error = A::error || B::error || A::rows != B::rows
-		|| int(A::columns) != B::columns };
+	enum { error = static_cast<int>(A::error) || static_cast<int>(B::error) || static_cast<int>(A::rows) != static_cast<int>(B::rows)
+           || static_cast<int>(A::columns) != static_cast<int>(B::columns) };
 	enum { element_op = A::element_op && B::element_op };
 	typedef matrix_binop<binop_sub, A, B> base_type;
 	typename matrix_ref<A>::type a;
@@ -103,7 +103,7 @@ struct matrix_binop<binop_expand, A, B> {
 		columns = 1 };
 	enum { is_storage = false };
 	enum { is_lvalue = false };
-	enum { error = A::error || B::error };
+	enum { error = static_cast<int>(A::error) || static_cast<int>(B::error) };
 	enum { element_op = false };
 	typedef matrix_binop<binop_expand, A, B> base_type;
 	typename matrix_ref<A>::type a;
@@ -118,7 +118,7 @@ struct matrix_binop<binop_rotation, A, B> {
 		columns = 4 };
 	enum { is_storage = false };
 	enum { is_lvalue = false };
-	enum { error = A::error || B::error };
+	enum { error = static_cast<int>(A::error) || static_cast<int>(B::error) };
 	enum { element_op = false };
 	typedef matrix_binop<binop_rotation, A, B> base_type;
 	typename matrix_ref<A>::type a;

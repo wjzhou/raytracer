@@ -2,21 +2,21 @@
 #include "Scene.hpp"
 #include "gramma/ParseDriver.hpp"
 #include "Raytracer.hpp"
+
 int
 main(int argc, char *argv[])
 {
-  
-      Options opt;
-      opt.parse(argc,argv);
+      options.parse(argc,argv);
       Scene scene;
       ParseDriver pd(scene);
-      pd.parse(opt.getInputFileName());
+      pd.parse(options.getInputFileName());
       ImageBuffer image(garg_xres,garg_yres);
-      Shader* shaderp=Shader::getShader(opt.getShadingMethod(),scene);
+      Shader* shaderp=Shader::getShader(options.getShadingMethod(),scene);
+
       Raytracer tracer=Raytracer(&scene,&image,shaderp);
       tracer.doRaytrace();
-      image.outputImage(opt.getOutputFileName());
-      image.outputDepth(opt.getOutputDepthFileName());
+      image.outputImage(options.getOutputFileName());
+      image.outputDepth(options.getOutputDepthFileName());
       cout<<"render has been completed."<<endl;
       delete shaderp;
       return 0;

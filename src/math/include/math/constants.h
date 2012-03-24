@@ -2,12 +2,16 @@
 #define MATH2_CONSTANTS_H
 
 #include <limits>
-
+#ifdef __GNUC__
+#define VARIABLE_IS_NOT_USED __attribute__ ((unused))
+#else
+#define VARIABLE_IS_NOT_USED
+#endif
 namespace math {
 
 const float pi = 3.1415926535897932384626433832795;
 const float ln_2 = 0.693147180559945309417;
-const float epsilon = std::numeric_limits<float>::epsilon();
+const float VARIABLE_IS_NOT_USED epsilon = std::numeric_limits<float>::epsilon();
 
 // typeless multiplicative identity
 const identity_t identity = identity_t();

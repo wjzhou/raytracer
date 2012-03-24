@@ -13,6 +13,7 @@
 #include "common.hpp"
 #include "Ray.hpp"
 #include "ViewPlane.hpp"
+#include "SuperSampling.hpp"
 class Camera
 {
   friend class Scene;
@@ -23,11 +24,14 @@ public:
   virtual void updateRayAt(Ray& ray, int x,int y)const=0;
   virtual void updateRayX(Ray&)const=0;
   virtual void updateRayY(Ray&)const=0;
+  virtual void initSuperSampling();
+  virtual void adjust(Ray& ray, int i)const=0;
 protected:
   Vec3f center;
   Vec3f direction;
   Vec3f up;
   ViewPlane viewplane;
+  SuperSampling* sampling;
 };
 
 class OrthographicCamera : public Camera
@@ -39,6 +43,7 @@ public:
   virtual void updateRayAt(Ray& ray,int x,int y)const;
   virtual void updateRayX(Ray&)const;
   virtual void updateRayY(Ray&)const;
+  virtual void adjust(Ray& ray, int i)const;
 };
 
 class PerspectiveCamera : public Camera
@@ -50,6 +55,7 @@ public:
   virtual void updateRayAt(Ray& ray,int x,int y)const;
   virtual void updateRayX(Ray&)const;
   virtual void updateRayY(Ray&)const;
+  virtual void adjust(Ray& ray, int i)const;
 };
 
 

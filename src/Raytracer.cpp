@@ -11,6 +11,7 @@
 
 #include "Raytracer.hpp"
 #include "common.hpp"
+#include "SuperSampling.hpp"
 #include <iostream>
 #include <boost/ptr_container/ptr_array.hpp>
 void
@@ -22,7 +23,8 @@ Raytracer::doRaytrace()
   int x,y;
   int height=imagep->height;
   int width=imagep->width;
-  
+  const int samples=SuperSampling::samples;
+  const float samples_1=1/static_cast<float>(samples);
   /*using default shared, because on mac os x the const Camera will be 
    * predetermined as shard and have error 
    * 'camera' is predetermined 'shared' for 'shared'
@@ -40,14 +42,17 @@ Raytracer::doRaytrace()
     Ray ray;
     camera.updateRayAt(ray,0,y);
     for (x=0;x<width;x++){
+     Color color=math::zero;
+     for (int i=0;i<samples;i++){
+     camera.adjust(ray,i);         
       ray.cleanUp();
       //cout<<x<<" "<<y<<" "<<ray.origin<<" "<<ray.direction<<endl;
       topGroup->intersection(ray);
       if (ray.hitObject==NULL){ /// not hit terminal ray
-        imagep->setColor(x,y,scenep->getBackground());
+        color+=scenep->getBackground();
       }else{     
         imagep->setDepth(x,y,ray.distance);
-        Color color=shaderp->doShading(ray);
+        color+=shaderp->doShading(ray);
 #ifndef RELEASE
         if(color.x<0||color.y<0||color.z<0){
           std::cout<<"suspect point:px="<<x<<",py="<<y<<"color:"<<color<<std::endl;
@@ -55,10 +60,10 @@ Raytracer::doRaytrace()
           color.x=color.y=color.z=1.0f; //to make the point easier to seen
         }
 #endif /*RELEASE*/
-
-        imagep->setColor(x,y,color);
-      }
-      camera.updateRayX(ray);
+      } 
+     }
+     imagep->setColor(x,y,color*samples_1);
+     camera.updateRayX(ray);
     }
   }
 }

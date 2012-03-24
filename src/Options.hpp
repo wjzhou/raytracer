@@ -21,6 +21,9 @@ public:
   std::string& getOutputFileName();
   std::string& getOutputDepthFileName();
   std::string& getShadingMethod();
+  std::string& getSuperSamplingMethod();
+  int getSuperSamplingSamples();
+  float getRotatedGridAngleSuperSampling();
   //int getXres(){return xres;}
   //int getYres(){return yres;}
 private:
@@ -31,6 +34,10 @@ private:
   //int xres;
   //int yres;
   std::string config_file;
+  bool superSampling;
+  std::string superSamplingMethod;
+  int superSamplingSamples;
+  float RotatedGridAngleSuperSamplingInDegree;
 };
 
 

@@ -11,8 +11,10 @@
 #include <iostream>
 #include <fstream>
 #include <boost/program_options.hpp>
+#include "SuperSampling.hpp"
 #include "common.hpp"
 #include "Options.hpp"
+Options options;
 namespace po = boost::program_options;
 using namespace std;
 float garg_max_depth;
@@ -79,6 +81,13 @@ try{
   po::options_description shading("Shading method options");
   shading.add_options()
     ("shadingMethod,s", po::value<string>(&shadingMethod)->default_value("blinn_phong_shadow"), "Select shading method, allowed value:\nsimple: assume light is at view point\nblinn_phong: using blinn-phong model\nblinn_phong_shadow: using blinn-phong model with hard shadow");
+
+  po::options_description antialias("Antialias method options");
+  antialias.add_options()
+    ("superSamplingMethod", po::value<string>(&superSamplingMethod)->default_value("grid"), "Select supersampling method, allowed value:\ngrid,random,poisson,jitter.\nhttp://en.wikipedia.org/wiki/Supersampling");
+  antialias.add_options()
+    ("superSamplingSamples", po::value<int>(&superSamplingSamples)->default_value(1), "indicate supersampling samples, 4x4=16")
+    ("RotatedGridAngleSuperSampling", po::value<float>(&RotatedGridAngleSuperSamplingInDegree)->default_value(30), "indicate count clock angle in dgree when use rotated super sampling");
   
   po::options_description misc("Miscellaneous options");
   misc.add_options()
@@ -90,7 +99,7 @@ try{
     ;
     
   po::options_description all("All allowed options");
-  all.add(generic).add(required).add(shading).add(perspective).add(orthographic).add(misc);
+  all.add(generic).add(required).add(shading).add(antialias).add(perspective).add(orthographic).add(misc);
 
   po::options_description show("Options");
   show.add(generic).add(required);
@@ -155,6 +164,21 @@ std::string& Options::getOutputDepthFileName()
 std::string& Options::getShadingMethod()
 {
   return shadingMethod;
+}
+
+std::string& Options::getSuperSamplingMethod()
+{
+  return superSamplingMethod;
+}
+
+int Options::getSuperSamplingSamples()
+{
+  return superSamplingSamples;
+}
+
+float Options::getRotatedGridAngleSuperSampling()
+{
+  return 2*M_PI*RotatedGridAngleSuperSamplingInDegree/360.0f;
 }
 
 

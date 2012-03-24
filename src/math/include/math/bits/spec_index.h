@@ -11,7 +11,7 @@ struct matrix_unop<unop_index<I>, A> {
 	enum { is_storage = A::is_storage };
 	enum { is_lvalue = is_storage && !info::aliasing };
 	enum { error = A::error || info::error };
-	enum { element_op = A::element_op && !info::aliasing
+	enum { element_op = (A::element_op && !info::aliasing)
 		|| is_storage };
 
 	typedef matrix_unop<unop_index<I>, A> base_type;
@@ -45,7 +45,7 @@ struct matrix_unop<unop_cindex<I>, A> {
 	enum { is_storage = A::is_storage };
 	enum { is_lvalue = false };
 	enum { error = A::error || info::error };
-	enum { element_op = A::element_op && !info::aliasing
+	enum { element_op = (A::element_op && !info::aliasing)
 		|| is_storage };
 
 	typedef matrix_unop<unop_cindex<I>, A> base_type;
