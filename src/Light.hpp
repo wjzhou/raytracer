@@ -57,8 +57,22 @@ public:
     specular=diffuse=*color;
     attenuation=Vec3f(1.0f,0.0f,0.0f);
   }
+  Color& getColor()
+  {
+    return diffuse;
+  }
+    
+  void setPower(float a_power)
+  {
+    power=a_power;
+  }
+  float getPower()
+  {
+    return power;
+  }
   
   
+  float power;
   Color diffuse;
   Color specular;
   Color ambient;
@@ -80,5 +94,36 @@ public:
   
   virtual ~PointLight(){};
 };
+
+class AreaLight : public Light
+{
+public:
+  AreaLight(Color& color, float power)
+    :color(color),power(power),distribution(0.0f,1.0f){
+    setColor(&color);
+  }
   
+  void initPosition(const Vec3f& a_o, const Vec3f& o1, const Vec3f& o2)
+  {
+    o=a_o;
+    a=o1-o;
+    b=o2-o;
+  }
+    
+  virtual Vec3f getLightVector(Vec3f& hitPoint)
+  {
+    return o+distribution(engine)*a+distribution(engine)*b-hitPoint;
+  }
+    
+  Vec3f color;
+  float power;
+  Vec3f o;
+  Vec3f a;
+  Vec3f b;
+  std::mt19937 engine;
+  std::uniform_real_distribution<float> distribution;
+  virtual ~AreaLight(){};
+private:
+};
+
 #endif /* _LIGHT_H_ */

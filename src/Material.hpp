@@ -28,6 +28,15 @@ public:
 class PhongMaterial//: public Material
 {
 public:
+  PhongMaterial()
+  {
+    diffuse=math::zero;
+    specular=math::zero;
+    ambient=math::zero;
+    exponent=0.0f;
+    reflectiveRate=0.0f;
+  }
+  
   void setAmbient(Color* ambientp)
   {
     if (ambientp == NULL) {
@@ -55,11 +64,16 @@ public:
     } else {
       diffuse = *diffusep;
     }
-  }  
+  }
+  void setReflectiveRate(float a_reflectiveRate)
+  {
+    reflectiveRate=a_reflectiveRate;
+  }
   Color diffuse;
   Color specular;
   Color ambient;
   float exponent;
+  float reflectiveRate;
 private:
 };
 typedef PhongMaterial Material;

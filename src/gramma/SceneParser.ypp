@@ -50,10 +50,10 @@
 %token <sval> plyname
 
 
-%token  OrthographicCamera center direction up PerspectiveCamera angle SimplePerspectiveCamera distance ViewPlane width height pixelsize Lights numLights ambientColor DirectionalLight position color attenuation PointLight Background
+%token  OrthographicCamera center direction up PerspectiveCamera angle SimplePerspectiveCamera distance ViewPlane width height pixelsize Lights numLights ambientColor DirectionalLight position color power attenuation PointLight AreaLight Background
 
  /*material*/
-%token  Materials  numMaterials PhongMaterial diffuseColor specularColor exponent transparentColor reflextiveColor indexOfRefraction 
+%token  Materials  numMaterials PhongMaterial diffuseColor specularColor exponent transparentColor reflectiveColor indexOfRefraction reflectiveRate
 
  /*transform*/
 
@@ -61,13 +61,13 @@
 
 %type <cval> camera orthographicCamera perspectiveCamera simplePerspectiveCamera
 
-%type <yLight>  light pointLight directionalLight
+%type <yLight>  light pointLight directionalLight areaLight
 %type <yObject3D>    object3D group transform sphere plane triangle triangleMesh
 %type <yMaterial>    material phongMaterial
 %type <vec3f>  vec3f viewPlane optionAttenuation optionAmbientColor optionSpecularColor
 %type <ival>   materialIndex
 %type <yTransformation>   transformation
-%type <fval>   Float optionExponent
+%type <fval>   Float optionExponent optionReflectiveRate
 
 %printer    { debug_stream () << *$$; } <sval> <vval>
 %destructor { delete $$; } <sval> <vval>
@@ -125,6 +125,7 @@ lightList: lightList light{driver.scene.addLight($2);}
 
 light: directionalLight {$$=$1;}
      | pointLight  {$$=$1;}
+     | areaLight{$$=$1;};
 
 optionAttenuation: attenuation vec3f{$$=$2;}
 | /*empty*/{$$=NULL;};
@@ -144,6 +145,25 @@ position vec3f color vec3f optionAttenuation
   delete $6;
   delete $7;
  };
+
+areaLight: AreaLight '{'
+  color vec3f
+  power Float
+  vertex0 vec3f
+  vertex1 vec3f
+  vertex2 vec3f
+'}' {
+  
+  AreaLight* light=new AreaLight(*$4,$6);
+  
+  light->initPosition(*$8,*$10,*$12);
+  $$=static_cast<Light*>(light);
+  delete $4;
+  delete $8;
+  delete $10;
+  delete $12;
+ };
+
 
 background: Background '{'
 color vec3f
@@ -166,8 +186,11 @@ optionSpecularColor: specularColor vec3f {$$=$2;}
 | /*empty*/{$$=NULL;};
 optionExponent: exponent Float {$$=$2;}
 | /*empty*/{$$=0.0f;};
+optionReflectiveRate: reflectiveRate Float {$$=$2;}
+| /*empty*/{$$=0.0f;};
 
-phongMaterial: PhongMaterial '{' diffuseColor vec3f optionAmbientColor optionSpecularColor optionExponent
+
+phongMaterial: PhongMaterial '{' diffuseColor vec3f optionAmbientColor optionSpecularColor optionExponent optionReflectiveRate
 '}'
 {
   $$=new PhongMaterial();
@@ -175,6 +198,7 @@ phongMaterial: PhongMaterial '{' diffuseColor vec3f optionAmbientColor optionSpe
   $$->setAmbient($5);
   $$->setSpecular($6);
   $$->setExponent($7);
+  $$->setReflectiveRate($8);
   delete $4;
   delete $5;
   delete $6;
