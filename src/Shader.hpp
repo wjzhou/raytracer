@@ -51,4 +51,13 @@ public:
   Group* topGroup;
 };
 
+class PhotonMapping : public Shader /* for efficent, do not use virtual function here*/
+{
+public:
+  PhotonMapping(Scene& scene);
+  virtual Color doShading(Ray& ray);
+  Scene& scene;
+  Group* topGroup;
+};
+
 #endif /* _SHADER_H_ */
