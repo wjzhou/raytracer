@@ -145,7 +145,8 @@ numMaterials return token::numMaterials;
 PhongMaterial return token::PhongMaterial;
 exponent return token::exponent;
 transparentColor return token::transparentColor;
-reflextiveColor return token::reflextiveColor;
+reflectiveColor return token::reflectiveColor;
+reflectiveRate return token::reflectiveRate;
 indexOfRefraction return token::indexOfRefraction;
 
 Group return token::Group;

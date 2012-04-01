@@ -53,7 +53,7 @@
 %token  OrthographicCamera center direction up PerspectiveCamera angle SimplePerspectiveCamera distance ViewPlane width height pixelsize Lights numLights ambientColor DirectionalLight position color power attenuation PointLight AreaLight Background
 
  /*material*/
-%token  Materials  numMaterials PhongMaterial diffuseColor specularColor exponent transparentColor reflextiveColor indexOfRefraction 
+%token  Materials  numMaterials PhongMaterial diffuseColor specularColor exponent transparentColor reflectiveColor indexOfRefraction reflectiveRate
 
  /*transform*/
 
@@ -67,7 +67,7 @@
 %type <vec3f>  vec3f viewPlane optionAttenuation optionAmbientColor optionSpecularColor
 %type <ival>   materialIndex
 %type <yTransformation>   transformation
-%type <fval>   Float optionExponent
+%type <fval>   Float optionExponent optionReflectiveRate
 
 %printer    { debug_stream () << *$$; } <sval> <vval>
 %destructor { delete $$; } <sval> <vval>
@@ -186,8 +186,11 @@ optionSpecularColor: specularColor vec3f {$$=$2;}
 | /*empty*/{$$=NULL;};
 optionExponent: exponent Float {$$=$2;}
 | /*empty*/{$$=0.0f;};
+optionReflectiveRate: reflectiveRate Float {$$=$2;}
+| /*empty*/{$$=0.0f;};
 
-phongMaterial: PhongMaterial '{' diffuseColor vec3f optionAmbientColor optionSpecularColor optionExponent
+
+phongMaterial: PhongMaterial '{' diffuseColor vec3f optionAmbientColor optionSpecularColor optionExponent optionReflectiveRate
 '}'
 {
   $$=new PhongMaterial();
@@ -195,6 +198,7 @@ phongMaterial: PhongMaterial '{' diffuseColor vec3f optionAmbientColor optionSpe
   $$->setAmbient($5);
   $$->setSpecular($6);
   $$->setExponent($7);
+  $$->setReflectiveRate($8);
   delete $4;
   delete $5;
   delete $6;
