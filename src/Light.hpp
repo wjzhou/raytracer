@@ -10,7 +10,8 @@
  */
 #ifndef _LIGHT_H_
 #define _LIGHT_H_
-
+#include "common.hpp"
+#include <random>
 class Light
 {
 public:
@@ -78,6 +79,7 @@ public:
   Color ambient;
   Vec3f attenuation;
   virtual Vec3f getLightVector(Vec3f& hitPoint)=0;
+  virtual void getLightVector2(Vec3f& result, float& power, float& distance, const Vec3f& hitPoint)=0;
   virtual ~Light(){};
 };
 
@@ -91,7 +93,7 @@ public:
   {
     return position-hitPoint;
   }
-  
+  virtual void getLightVector2(Vec3f& result, float& power,float& distance, const Vec3f& hitPoint);
   virtual ~PointLight(){};
 };
 
@@ -108,8 +110,9 @@ public:
     o=a_o;
     a=o1-o;
     b=o2-o;
+    normal=norm(cross(a,b));
   }
-    
+  virtual void getLightVector2(Vec3f& result, float& power,float& distance, const Vec3f& hitPoint);
   virtual Vec3f getLightVector(Vec3f& hitPoint)
   {
     return o+distribution(engine)*a+distribution(engine)*b-hitPoint;
@@ -120,6 +123,7 @@ public:
   Vec3f o;
   Vec3f a;
   Vec3f b;
+  Vec3f normal;
   std::mt19937 engine;
   std::uniform_real_distribution<float> distribution;
   virtual ~AreaLight(){};

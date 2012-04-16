@@ -134,7 +134,7 @@ PhotonMapping::doShading(Ray& ray)
     if(reflectRay.hitObject == ray.hitObject){ //hit nonthing
       return Color(0.0f,0.0f,0.0f);
     }
-    return doShading(reflectRay);
+    return doShading(reflectRay);//todo
   }
   
     
@@ -142,15 +142,10 @@ PhotonMapping::doShading(Ray& ray)
   boost::ptr_vector<Light>::iterator light;
   boost::ptr_vector<Light>& lights=scene.getLights();
   for (light=lights.begin();light < lights.end(); light++){
-    Vec3f lightVector=light->getLightVector(hitPoint);
-    float distance=abs(lightVector);
-    lightVector/=distance;
-    //constant linear quadratic 
-    float attenuation= 1.0f / (light->attenuation(0)+light->attenuation(1)*distance
-                               +light->attenuation(2)*distance*distance);
-      //float attenuation=1.0f;
-    Color ambient=light->ambient*material.ambient*attenuation;
-    color+=ambient;
+    Vec3f lightVector;
+    float power;
+    float distance;
+    light->getLightVector2(lightVector,power,distance,hitPoint);
     float normalLight=dot(normal,lightVector);
     if (normalLight<=0.0f)
       continue;
@@ -162,17 +157,7 @@ PhotonMapping::doShading(Ray& ray)
     topGroup->intersection(shadowRay);
     if(shadowRay.distance < distance) //in shadow
       continue;
-    Color diffuse=light->diffuse*(material.diffuse)*(normalLight*attenuation);
-    
-    if(material.exponent!=0.0f){
-      Vec3f halfVector=lightVector-ray.direction;
-      //halfVector.normalize(); //change to new math library
-      halfVector/=abs(halfVector);
-      float half=std::max(0.0f, dot(normal,halfVector));
-      float powerFactor=std::pow(half, material.exponent);
-      Color specular=light->specular*material.specular*powerFactor*attenuation;
-      color+=specular;
-    }
+    Color diffuse=light->diffuse*(material.diffuse)*(normalLight*power);
     color+=diffuse;
   }
   return color;
