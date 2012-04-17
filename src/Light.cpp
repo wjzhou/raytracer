@@ -17,5 +17,5 @@ AreaLight::getLightVector2(Vec3f& result, float& a_power,float& a_distance, cons
   result=o+e1*a+e2*b-hitPoint;
   a_distance=abs(result);
   result=result/a_distance;
-  a_power=power*dot(result,normal);
+  a_power=std::max(0.0f,(-power)*dot(result,normal));
 }

@@ -13,7 +13,7 @@
 #ifndef _SHADER_H_
 #define _SHADER_H_
 #include "Ray.hpp"
-
+#include "Random3D.hpp"
 class Shader
 {
 public:
@@ -56,8 +56,11 @@ class PhotonMapping : public Shader /* for efficent, do not use virtual function
 public:
   PhotonMapping(Scene& scene);
   virtual Color doShading(Ray& ray);
+private:
+  Color doShading2(Ray& ray,int depth);
   Scene& scene;
   Group* topGroup;
+  DiffuseRandom* diffuseRandom;
 };
 
 #endif /* _SHADER_H_ */

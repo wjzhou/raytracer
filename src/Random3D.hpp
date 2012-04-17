@@ -6,18 +6,18 @@
 class Random3D
 {
 public:
-  virtual void getRandom(Vec3f& result);
-  virtual ~Random3D();
+  virtual void getRandom(Vec3f& result)=0;
+  virtual ~Random3D(){};
 };
 
-class DiffuseRandom:Random3D
+class DiffuseRandom: public Random3D
 {
 public:
-  virtual void getRandom(Vec3f& result);
-  virtual ~DiffuseRandom();
+  virtual void getRandom(Vec3f& result)=0;
+  virtual ~DiffuseRandom(){};
 };
 
-class RejectDiffuseRandom
+class RejectDiffuseRandom: public DiffuseRandom
 {
   virtual void getRandom(Vec3f& result);
   ~RejectDiffuseRandom(){};

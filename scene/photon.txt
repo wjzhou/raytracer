@@ -1,6 +1,6 @@
 
 PerspectiveCamera {
-    center 0 -2 8
+    center 0 -0.4 1.6
     direction 0 0 -1  
     up 0 1 0
     angle 120
@@ -18,10 +18,10 @@ Lights {
        }*/
     AreaLight {
         color 1.0 1.0 1.0
-        power 0.1
-           vertex0 -0.5 4.999999 -0.5
-           vertex1 0.5 4.999999 -0.5
-           vertex2 -0.5 4.999999 0.5
+        power 1
+           vertex0 -0.1 0.999999 -0.1
+           vertex1 0.1 0.999999 -0.1
+           vertex2 -0.1 0.999999 0.1
 
     }
 }
@@ -65,8 +65,8 @@ Group {
     numObjects 6
     MaterialIndex 0
     Sphere {
-	center -2 -3.5 -2
-        radius 1.5
+	center -0.4 -0.7 -0.4
+        radius 0.3
     }
 /*    MaterialIndex 1
     Sphere {
@@ -76,27 +76,27 @@ Group {
     MaterialIndex 2
     Plane {
         normal 0 1 0
-        offset -5
+        offset -1
     }
     MaterialIndex 6
     Plane {
         normal 0 -1 0
-        offset -5
+        offset -1
     }
     MaterialIndex 4
     Plane {
         normal 1 0 0
-        offset -5
+        offset -1
     }
     MaterialIndex 3
     Plane {
         normal -1 0 0
-        offset -5
+        offset -1
     }
 
     MaterialIndex 2
     Plane {
         normal 0 0 1
-        offset -5
+        offset -1
     }
 }

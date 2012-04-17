@@ -5,6 +5,7 @@
 #include "Scene.hpp"
 #include <iostream>
 #include <algorithm>
+#include <cassert>
 Shader* Shader::getShader(std::string shadingMethod,Scene& scene)
 {
     if ( shadingMethod == "simple" ) return new SimpleDiffuseShader();
@@ -114,13 +115,23 @@ PhongShaderWithShadow::doShading(Ray& ray)
 }
 
 PhotonMapping::PhotonMapping(Scene& scene)
- :scene(scene)
+  :scene(scene),diffuseRandom(new RejectDiffuseRandom())
 {
   topGroup=scene.getTopGroup();
 }
+
 Color
 PhotonMapping::doShading(Ray& ray)
 {
+  return doShading2(ray,0);
+}
+
+
+Color
+PhotonMapping::doShading2(Ray& ray,int depth)
+{
+  if(depth>4)
+    return Color(0.0f,0.0f,0.0f);
   Vec3f hitPoint=ray.origin+ray.distance*ray.direction;
   Vec3f normal=ray.hitObject->getNormal(hitPoint);
   Material& material=ray.hitObject->getMaterial();
@@ -134,7 +145,7 @@ PhotonMapping::doShading(Ray& ray)
     if(reflectRay.hitObject == ray.hitObject){ //hit nonthing
       return Color(0.0f,0.0f,0.0f);
     }
-    return doShading(reflectRay);//todo
+    return doShading2(reflectRay,depth);//todo
   }
   
     
@@ -157,8 +168,22 @@ PhotonMapping::doShading(Ray& ray)
     topGroup->intersection(shadowRay);
     if(shadowRay.distance < distance) //in shadow
       continue;
-    Color diffuse=light->diffuse*(material.diffuse)*(normalLight*power);
+    Color diffuse=light->diffuse*(material.diffuse)*(normalLight*power/(distance*distance));    
     color+=diffuse;
+    //    if(diffuse.x<0.0f||diffuse.y<0.0f||diffuse.z<0.0f)
+    //  std::cout<<"\n\n\n\n"<<light->diffuse<<"###"<<material.diffuse<<"###"<<normalLight<<power<<"\n\n\n\n";
   }
+  //indirect light
+  Ray indirectRay;
+  diffuseRandom->getRandom(indirectRay.direction);
+  if(dot(indirectRay.direction,normal)<0.0f)
+    indirectRay.direction=-indirectRay.direction;
+  indirectRay.origin=hitPoint;
+  indirectRay.distance=INFINITY;
+  indirectRay.hitObject=ray.hitObject;
+  topGroup->intersection(indirectRay);
+  if(indirectRay.hitObject==ray.hitObject) //hitnothing
+    return color;
+  color+=doShading2(indirectRay,depth+1)/(indirectRay.distance*indirectRay.distance);
   return color;
 }
