@@ -89,10 +89,10 @@ AC_DEFUN([AX_CXX_COMPILE_STDCXX_0X], [
 
   if test "$ax_cv_cxx_compile_cxx0x_native" != yes ; then
     if test "$ax_cv_cxx_compile_cxx0x_cxx" = yes ; then
-      STDCXX_0X="-std=c++0x $CXXFLAGS"
+      STDCXX_0X="-std=c++0x"
     else
       if test "$ax_cv_cxx_compile_cxx0x_gxx" = yes ; then
-        STDCXX_0X="-std=gnu++0x $CXXFLAGS"
+        STDCXX_0X="-std=gnu++0x"
       fi
     fi
   fi
