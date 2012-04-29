@@ -6,6 +6,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cassert>
+#include <boost/math/constants/constants.hpp>
 Shader* Shader::getShader(std::string shadingMethod,Scene& scene)
 {
     if ( shadingMethod == "simple" ) return new SimpleDiffuseShader();
@@ -115,7 +116,7 @@ PhongShaderWithShadow::doShading(Ray& ray)
 }
 
 PhotonMapping::PhotonMapping(Scene& scene)
-  :scene(scene),diffuseRandom(new RejectDiffuseRandom())
+  :scene(scene),diffuseRandom(new SimpleDiffuseRandom())
 {
   topGroup=scene.getTopGroup();
 }
@@ -168,7 +169,8 @@ PhotonMapping::doShading2(Ray& ray,int depth)
     topGroup->intersection(shadowRay);
     if(shadowRay.distance < distance) //in shadow
       continue;
-    Color diffuse=light->diffuse*(material.diffuse)*(normalLight*power/(distance*distance));    
+    Color diffuse=light->diffuse*(material.diffuse)*(normalLight*power/(distance*distance));
+    //if(depth!=0)
     color+=diffuse;
     //    if(diffuse.x<0.0f||diffuse.y<0.0f||diffuse.z<0.0f)
     //  std::cout<<"\n\n\n\n"<<light->diffuse<<"###"<<material.diffuse<<"###"<<normalLight<<power<<"\n\n\n\n";
@@ -184,6 +186,9 @@ PhotonMapping::doShading2(Ray& ray,int depth)
   topGroup->intersection(indirectRay);
   if(indirectRay.hitObject==ray.hitObject) //hitnothing
     return color;
-  color+=doShading2(indirectRay,depth+1)/(indirectRay.distance*indirectRay.distance);
+  //color+=(doShading2(indirectRay,depth+1)/(std::max(0.3f,(indirectRay.distance*indirectRay.distance))));
+  //std::cout<<(indirectRay.distance*indirectRay.distance)<<std:
+  //color+=(doShading2(indirectRay,depth+1)*(2.0f*boost::math::constants::pi<float>()));
+  color+=doShading2(indirectRay,depth+1);
   return color;
 }
