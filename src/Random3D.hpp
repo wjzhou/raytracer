@@ -23,9 +23,18 @@ class RejectDiffuseRandom: public DiffuseRandom
   ~RejectDiffuseRandom(){};
 private:
   std::default_random_engine engine;
-  std::uniform_real_distribution<float> distribution; 
+  std::uniform_real_distribution<float> distribution;  
 };
 
-  
+class SimpleDiffuseRandom: public DiffuseRandom
+{
+public:
+
+  virtual void getRandom(Vec3f& result);
+  virtual ~SimpleDiffuseRandom(){};
+private:
+  std::default_random_engine engine;
+  std::uniform_real_distribution<float> distribution;  
+};  
 
 #endif /* _RANDOM3D_H_ */
