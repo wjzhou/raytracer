@@ -28,6 +28,7 @@ public:
   Object3D* hitObject; /* make then on the same 64 byte cache line*/
   Vec3f currView;
   Vec3f currViewY;
+  int isShawdow;
   void cleanUp(){hitObject=NULL;distance=INFINITY;}
 };
 

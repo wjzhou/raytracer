@@ -74,6 +74,8 @@ public:
   Color ambient;
   float exponent;
   float reflectiveRate;
+  int isLight:1;
+  int isrefraction:1;
 private:
 };
 typedef PhongMaterial Material;

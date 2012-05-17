@@ -7,7 +7,7 @@ int
 main(int argc, char *argv[])
 {
       options.parse(argc,argv);
-      Scene scene;
+      Scene& scene=gScene;
       ParseDriver pd(scene);
       pd.parse(options.getInputFileName());
       ImageBuffer image(garg_xres,garg_yres);

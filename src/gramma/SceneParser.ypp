@@ -170,7 +170,7 @@ color vec3f
 '}' {driver.scene.setBackground(*$4);};
 
 materials: Materials '{'
-numMaterials Integer{driver.scene.newMaterials($4);}
+numMaterials Integer{driver.baseMaterialIndex=driver.scene.newMaterials($4); }
 materialList
 '}' {};
 
@@ -247,7 +247,7 @@ triangleMesh: TriangleMesh '{' ply_file plyname '}'
   $$->setMaterialIndex(driver.currentMaterialIndex);
 };
 
-materialIndex: MaterialIndex Integer{driver.currentMaterialIndex=$2;};
+materialIndex: MaterialIndex Integer{driver.currentMaterialIndex=$2+driver.baseMaterialIndex;};
 
 //vec3f: Float Float Float{$$=std::unique_ptr<Vec3f>(new Vec3f($1,$2,$3));};
 vec3f: Float Float Float{$$=new Vec3f($1,$2,$3);};

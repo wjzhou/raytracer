@@ -55,6 +55,7 @@ Sphere::intersection(Ray& ray)
 {
   if (ray.hitObject == this)
     return Object3D::RESULT_MISS;
+  
   Vec3f v=ray.origin-center;
   float b=-dot(v,ray.direction);
   float det=(b*b)-dot(v,v)+radius2;
@@ -163,9 +164,10 @@ Plane::getNormal(Vec3f& hitPoint)
 // }
 
 
-Triangle::Triangle(Vec3f& a, Vec3f& b, Vec3f& c)
+Triangle::Triangle(const Vec3f& a, const Vec3f& b, const Vec3f& c)
   :a(a)
 {
+  
   normal=cross((b-a),(c-a));
   normal=norm(normal);
   A=a-b;
@@ -181,6 +183,8 @@ Triangle::Triangle(Vec3f& a, Vec3f& b, Vec3f& c)
 Object3D::Result
 Triangle::intersection(Ray& ray)
 {
+  /*  if (isLight)
+      return Object3D::RESULT_MISS;*/
   float A_D=1/dot(ray.direction,AB);
   Vec3f O=a-ray.origin;
   float t=A_D*dot(O,AB);

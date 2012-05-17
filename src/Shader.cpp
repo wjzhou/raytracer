@@ -131,11 +131,14 @@ PhotonMapping::doShading(Ray& ray)
 Color
 PhotonMapping::doShading2(Ray& ray,int depth)
 {
+
+  Material& material=ray.hitObject->getMaterial();
+  if(material.isLight)
+      return material.diffuse;
   if(depth>4)
     return Color(0.0f,0.0f,0.0f);
   Vec3f hitPoint=ray.origin+ray.distance*ray.direction;
   Vec3f normal=ray.hitObject->getNormal(hitPoint);
-  Material& material=ray.hitObject->getMaterial();
   if(material.reflectiveRate>0.0f){
     Ray reflectRay;
     reflectRay.origin=hitPoint;
@@ -162,12 +165,13 @@ PhotonMapping::doShading2(Ray& ray,int depth)
     if (normalLight<=0.0f)
       continue;
     Ray shadowRay;
+    shadowRay.isShawdow=1;
     shadowRay.origin=hitPoint;
     shadowRay.direction=lightVector;
     shadowRay.distance=distance;
     shadowRay.hitObject=ray.hitObject;
     topGroup->intersection(shadowRay);
-    if(shadowRay.distance < distance) //in shadow
+    if(shadowRay.distance < distance-0.00001) //in shadow
       continue;
     Color diffuse=light->diffuse*(material.diffuse)*(normalLight*power/(distance*distance));
     //if(depth!=0)

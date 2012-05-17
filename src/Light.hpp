@@ -104,19 +104,12 @@ public:
     :color(color),power(power),distribution(0.0f,1.0f){
     setColor(&color);
   }
-  
-  void initPosition(const Vec3f& a_o, const Vec3f& o1, const Vec3f& o2)
-  {
-    o=a_o;
-    a=o1-o;
-    b=o2-o;
-    normal=norm(cross(a,b));
-  }
   virtual void getLightVector2(Vec3f& result, float& power,float& distance, const Vec3f& hitPoint);
   virtual Vec3f getLightVector(Vec3f& hitPoint)
   {
     return o+distribution(engine)*a+distribution(engine)*b-hitPoint;
   }
+  void initPosition(const Vec3f& a_o, const Vec3f& o1, const Vec3f& o2);
     
   Vec3f color;
   float power;

@@ -42,6 +42,6 @@ public:
   void error (const std::string& m);
   Scene& scene;
   int currentMaterialIndex;
-
+  int baseMaterialIndex;
 };
 #endif // ! _PARSEDRIVER_H_

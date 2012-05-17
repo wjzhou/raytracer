@@ -76,9 +76,10 @@ private:
 class Triangle : public Object3D
 {
 public:
-  Triangle(Vec3f& a, Vec3f& b, Vec3f& c);
+  Triangle(const Vec3f& a, const Vec3f& b, const Vec3f& c);
   virtual Object3D::Result intersection(Ray& ray);
   virtual Vec3f getNormal(Vec3f& hitPoint);
+  int isLight;
 private:
   Vec3f a;
   Vec3f A;

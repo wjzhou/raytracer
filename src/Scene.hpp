@@ -29,22 +29,28 @@ class SceneParser;
 class Scene
 {
   friend class yy::SceneParser;
-private:
+
+public:
   void setCamera(const Camera* ca){camera=ca;}
   void setDefaultLights();
   void newLights(const size_t size){lights.reserve(size);}
   void addLight(Light* light){lights.push_back(light);}
   void setBackground(const Color& bg){background=bg;}
-  void newMaterials(size_t size){materials.reserve(size);}
-  void addMaterial(Material* material){materials.push_back(material);}
+  int newMaterials(size_t size)
+    {int base=materials.size();
+      materials.reserve(size+base);
+      return base;
+    }//base materials for light source
+  
   void newGroup(size_t size);
   void endGroup(size_t size);
   void addObject3D(Object3D* object3D );
-public:
+
   Scene();
   const Camera& getCamera(){return *camera;}
   boost::ptr_vector<Light>& getLights(){return lights;}
   Color& getBackground(){return background;}
+  int addMaterial(Material* material){materials.push_back(material);return materials.size()-1;}
   Material& getMaterial(int index){return materials[index];}
   boost::ptr_vector<Material>& getMaterials(){return materials;}
   Group* getTopGroup(){return topGroup;}
@@ -58,5 +64,5 @@ private:
   std::vector<Group*> groups;
 };
 
-
+extern Scene gScene;
 #endif /* _SCENE_H_ */
