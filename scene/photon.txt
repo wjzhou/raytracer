@@ -19,9 +19,9 @@ Lights {
     AreaLight {
         color 1.0 1.0 1.0
         power 1
-           vertex0 -0.1 0.999999 -0.1
-           vertex1 0.1 0.999999 -0.1
-           vertex2 -0.1 0.999999 0.1
+           vertex0 -0.3 0.999999 -0.3
+           vertex1 0.3 0.999999 -0.3
+           vertex2 -0.3 0.999999 0.3
 
     }
 }

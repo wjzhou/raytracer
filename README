@@ -1,5 +1,5 @@
-This is the simple raytracer for cpsc-566. It use blinn-phong shading model, 
-because material properities for this model is eaiser to find.
+This is the simple raytracer for cpsc-566. It can use multiply shading model, 
+such as blinn-phong shading model, Monte Carlo ray tracing.  
 
 * Prerequisite
 gcc 4.5+
@@ -7,7 +7,7 @@ boost
 Graphicmagick (optional)
  
 * Usage:
-** compile
+** compile (For Mac Port)
 unzip and cd to the directory,then:  
 $./configure CXX=/opt/local/bin/g++ CC=/opt/local/bin/gcc
 $make
@@ -20,10 +20,14 @@ the default output file will be "output.ppm"
 and default depth  file will be "depth.pgm"
 
 *** render multiply scene
-$cd scene
 $./scene/traceAll scene
 
 * Enhance
+** Using Monte Carlo ray train
+$cd scene
+$../src/raytracer -i ./photon.txt -o ./Objects.png -d ./Objects_depth.png
+  --superSamplingMethod=jitter --superSamplingSamples=100 --shadingMethod=photon
+
 ** Antialias using various super sampling
 $cd scene
 $../src/raytracer -i ./Objects.txt -o ./Objects.png -d ./Objects_depth.png
@@ -51,7 +55,7 @@ The ply file parser are from libply by Ares Lagae <ares.lagae@cs.kuleuven.be>
 * FAQ:
 1. The output file may not have desired format.
 If the Graphicmagick does not support the format, it will output a miff(
-Magick image file format) file.
+Magick image file format) file which can not opened by image view program.
 
 2. If there still some thing wrong with the program, try using minimal set.
 At configure time, try configure using --disable-gm and --disable-openmp.
@@ -71,3 +75,7 @@ $../src/raytracer -i Specular.txt -o Specular.png -d Specular_dep.png
 $../src/raytracer -i Teapot.txt -o Teapot.png -d Teapot_dep.png
 #scene with two light source
 $../src/raytracer -i TwoLight.txt -o TwoLight.png -d TwoLight_dep.png
+#scene of Cornell box(This is more slow, it takes 10 min in my 8 threads i7)
+$../src/raytracer -i ./photon.txt -o ./Objects.png -d ./Objects_depth.png
+  --superSamplingMethod=jitter --superSamplingSamples=100 --shadingMethod=photon
+
